@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 export default function DashboardPage() {
 
   const [data, setData] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
 
@@ -32,10 +33,12 @@ export default function DashboardPage() {
     })
     .catch(err => {
       console.error("FETCH ERROR:", err)
+      setError(err.message)
     })
 
 }, [])
 
+  if (error) return <div>ERROR: {error}</div>
   if (!data) return <div>Loading...</div>
 
   return (
