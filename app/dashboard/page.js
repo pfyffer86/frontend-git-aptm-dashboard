@@ -12,16 +12,10 @@ export default function DashboardPage() {
     async function load() {
 
       const { data: sessionData } = await supabase.auth.getSession()
-
       const token = sessionData?.session?.access_token
 
-      if (!token) {
-        console.error("NO TOKEN")
-        return
-      }
-
       const res = await fetch(
-        "https://apertum-dashboard-production.up.railway.app/api/dashboard?wallet=0xAdE4b6B348B133452d3a36B803F6c963eae332A9",
+        "https://apertum-dashboard-production.up.railway.app/api/dashboard",
         {
           headers: {
             Authorization: "Bearer " + token
@@ -30,6 +24,7 @@ export default function DashboardPage() {
       )
 
       const json = await res.json()
+      console.log("API DATA:", json)
 
       setData(json)
     }
@@ -44,8 +39,14 @@ export default function DashboardPage() {
     <div style={{ padding: 40 }}>
       <h1>Dashboard</h1>
 
-      <p>Wallet: {data.wallet}</p>
-      <p>Balance: {data.nativeBalance}</p>
+      <h2>Total Value: ${data.totalValue.toFixed(2)}</h2>
+
+      <h3>Wallets</h3>
+      {data.wallets.map(w => (
+        <div key={w.id}>
+          {w.address} ({w.label || "no label"})
+        </div>
+      ))}
 
       <h2>Tokens</h2>
 
