@@ -4,7 +4,8 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body style={{ margin: 0, fontFamily: "Arial" }}>
+      <body style={{ margin: 0 }}>
+
         <div style={{ display: "flex", height: "100vh" }}>
 
           {/* SIDEBAR */}
@@ -16,11 +17,11 @@ export default function RootLayout({ children }) {
           }}>
             <h2>Apertum</h2>
 
-            <nav style={{ marginTop: 30 }}>
-              <NavLink href="/dashboard">Dashboard</NavLink>
-              <NavLink href="/assets">Assets</NavLink>
-              <NavLink href="/settings">Settings</NavLink>
-            </nav>
+            <div style={{ marginTop: 30 }}>
+              <a href="/dashboard" style={link}>Dashboard</a><br/>
+              <a href="/assets" style={link}>Assets</a><br/>
+              <a href="/settings" style={link}>Settings</a>
+            </div>
           </div>
 
           {/* MAIN */}
@@ -28,23 +29,21 @@ export default function RootLayout({ children }) {
             flex: 1,
             background: "#111",
             color: "#fff",
-            overflow: "auto"
+            padding: 20
           }}>
             {children}
           </div>
 
         </div>
+
       </body>
     </html>
   )
 }
 
-function NavLink({ href, children }) {
-  return (
-    <div style={{ marginBottom: 15 }}>
-      <a href={href} style={{ color: "#aaa", textDecoration: "none" }}>
-        {children}
-      </a>
-    </div>
-  )
+const link = {
+  color: "#aaa",
+  textDecoration: "none",
+  display: "block",
+  marginBottom: 10
 }
