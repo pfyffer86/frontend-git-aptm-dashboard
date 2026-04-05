@@ -104,22 +104,38 @@ export default function AssetsPage() {
           <tbody>
             {sorted.map(t => {
 
-              const allocation = totalValue > 0
-                ? (t.value_usd / totalValue) * 100
-                : 0
+  const allocation = totalValue > 0
+    ? (t.value_usd / totalValue) * 100
+    : 0
 
-              return (
-                <tr key={t.symbol} style={tr}>
-                  <td style={td}>{t.symbol}</td>
-                  <td style={td}>{t.amount.toFixed(6)}</td>
-                  <td style={td}>${t.price?.toFixed(2) || "0.00"}</td>
-                  <td style={td}>${t.value_usd.toFixed(2)}</td>
-                  <td style={td}>
-                    {allocation.toFixed(1)}%
-                  </td>
-                </tr>
-              )
-            })}
+  // 🔥 Fallback Preisberechnung
+  const price =
+    t.price && t.price > 0
+      ? t.price
+      : (t.amount > 0 ? t.value_usd / t.amount : 0)
+
+  return (
+    <tr key={t.symbol} style={tr}>
+      <td style={td}>{t.symbol}</td>
+
+      <td style={td}>
+        {t.amount.toFixed(6)}
+      </td>
+
+      <td style={td}>
+        ${price.toFixed(2)}
+      </td>
+
+      <td style={td}>
+        ${t.value_usd.toFixed(2)}
+      </td>
+
+      <td style={td}>
+        {allocation.toFixed(1)}%
+      </td>
+    </tr>
+  )
+})}
           </tbody>
         </table>
 
