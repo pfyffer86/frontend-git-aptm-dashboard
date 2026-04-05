@@ -25,9 +25,7 @@ export default function AssetsPage() {
         }
       )
 
-      if (!res.ok) {
-        throw new Error("API error: " + res.status)
-      }
+      if (!res.ok) throw new Error("API error: " + res.status)
 
       const json = await res.json()
       setData(json)
@@ -44,139 +42,201 @@ export default function AssetsPage() {
     load()
   }, [])
 
-  // ===== STATES =====
   if (loading) return <div style={{ padding: 40 }}>Loading...</div>
   if (error) return <div style={{ padding: 40 }}>Error: {error}</div>
   if (!data) return null
 
-  // ===== DERIVED =====
   const totalValue = data.totalValue || 0
   const tokens = data.tokens || []
 
-  // Sort by value desc
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
-  // ===== RENDER =====
   return (
-    <div style={{ padding: 40 }}>
+    <div style={styles.page}>
 
-      {/* ===== HEADER ===== */}
-      <h1>Assets</h1>
+      <h1 style={styles.title}>Assets</h1>
 
-      {/* ===== KPI ROW ===== */}
-      <div style={{
-        display: "flex",
-        gap: 20,
-        marginTop: 20,
-        marginBottom: 30
-      }}>
+      <KPISection totalValue={totalValue} count={tokens.length} />
 
-        {/* Total Value */}
-        <div style={cardStyle}>
-          <div>Total Assets Value</div>
-          <h2>${totalValue.toFixed(2)}</h2>
-        </div>
+      <AssetsTable tokens={sorted} totalValue={totalValue} />
 
-        {/* Asset Count */}
-        <div style={cardStyle}>
-          <div>Tracked Assets</div>
-          <h2>{tokens.length}</h2>
-        </div>
-
-      </div>
-
-      {/* ===== ASSETS BREAKDOWN ===== */}
-      <div style={cardStyle}>
-
-        <h3 style={{ marginBottom: 20 }}>Assets Breakdown</h3>
-
-        <table style={{ width: "100%" }}>
-          <thead>
-            <tr style={thRow}>
-              <th style={th}>Asset</th>
-              <th style={th}>Balance</th>
-              <th style={th}>Price</th>
-              <th style={th}>Value</th>
-              <th style={th}>Allocation</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sorted.map(t => {
-
-  const allocation = totalValue > 0
-    ? (t.value_usd / totalValue) * 100
-    : 0
-
-  // 🔥 Fallback Preisberechnung
-  const price =
-    t.price && t.price > 0
-      ? t.price
-      : (t.amount > 0 ? t.value_usd / t.amount : 0)
-
-  return (
-    <tr key={t.symbol} style={tr}>
-      <td style={td}>{t.symbol}</td>
-
-      <td style={td}>
-        {t.amount.toFixed(6)}
-      </td>
-
-      <td style={td}>
-        ${price.toFixed(2)}
-      </td>
-
-      <td style={td}>
-        ${t.value_usd.toFixed(2)}
-      </td>
-
-      <td style={td}>
-        {allocation.toFixed(1)}%
-      </td>
-    </tr>
-  )
-})}
-          </tbody>
-        </table>
-
-      </div>
-
-      {/* ===== WALLET BREAKDOWN (placeholder) ===== */}
-      <div style={{ ...cardStyle, marginTop: 30 }}>
-        <h3>Wallet Breakdown</h3>
-        <p style={{ opacity: 0.6 }}>
-          kommt im nächsten Schritt (API Erweiterung)
-        </p>
-      </div>
+      <WalletPlaceholder />
 
     </div>
   )
 }
 
-// ===== STYLES =====
-const cardStyle = {
-  background: "#111",
-  padding: 20,
-  borderRadius: 10,
-  flex: 1,
-  color: "#fff",
-  border: "1px solid #222"
+/* ================= KPI ================= */
+
+function KPISection({ totalValue, count }) {
+  return (
+    <div style={styles.kpiRow}>
+
+      <Card>
+        <div style={styles.kpiLabel}>Total Assets Value</div>
+        <div style={styles.kpiValue}>
+          ${totalValue.toFixed(2)}
+        </div>
+      </Card>
+
+      <Card>
+        <div style={styles.kpiLabel}>Tracked Assets</div>
+        <div style={styles.kpiValue}>
+          {count}
+        </div>
+      </Card>
+
+    </div>
+  )
 }
 
-const thRow = {
-  textAlign: "left",
-  borderBottom: "1px solid #333"
+/* ================= TABLE ================= */
+
+function AssetsTable({ tokens, totalValue }) {
+
+  return (
+    <div style={styles.card}>
+
+      <h3 style={styles.sectionTitle}>Assets Breakdown</h3>
+
+      <table style={styles.table}>
+
+        <thead>
+          <tr>
+            <th style={styles.th}>Asset</th>
+            <th style={styles.th}>Balance</th>
+            <th style={styles.th}>Price</th>
+            <th style={styles.th}>Value</th>
+            <th style={styles.th}>Allocation</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {tokens.map(t => {
+
+            const allocation = totalValue > 0
+              ? (t.value_usd / totalValue) * 100
+              : 0
+
+            const price =
+              t.price && t.price > 0
+                ? t.price
+                : (t.amount > 0 ? t.value_usd / t.amount : 0)
+
+            return (
+              <tr key={t.symbol} style={styles.tr}>
+
+                <td style={styles.td}>{t.symbol}</td>
+
+                <td style={styles.td}>
+                  {t.amount.toFixed(6)}
+                </td>
+
+                <td style={styles.td}>
+                  ${price.toFixed(2)}
+                </td>
+
+                <td style={styles.td}>
+                  ${t.value_usd.toFixed(2)}
+                </td>
+
+                <td style={styles.td}>
+                  {allocation.toFixed(1)}%
+                </td>
+
+              </tr>
+            )
+          })}
+        </tbody>
+
+      </table>
+
+    </div>
+  )
 }
 
-const th = {
-  padding: 10,
-  opacity: 0.7
+/* ================= REUSABLE CARD ================= */
+
+function Card({ children }) {
+  return (
+    <div style={styles.card}>
+      {children}
+    </div>
+  )
 }
 
-const tr = {
-  borderBottom: "1px solid #222"
+/* ================= PLACEHOLDER ================= */
+
+function WalletPlaceholder() {
+  return (
+    <div style={{ ...styles.card, marginTop: 30 }}>
+      <h3>Wallet Breakdown</h3>
+      <p style={{ opacity: 0.6 }}>
+        kommt im nächsten Schritt (API Erweiterung)
+      </p>
+    </div>
+  )
 }
 
-const td = {
-  padding: 10
+/* ================= STYLES ================= */
+
+const styles = {
+
+  page: {
+    padding: 40,
+    color: "#fff"
+  },
+
+  title: {
+    fontSize: 28,
+    marginBottom: 20
+  },
+
+  kpiRow: {
+    display: "flex",
+    gap: 20,
+    marginBottom: 30
+  },
+
+  card: {
+    background: "#111",
+    padding: 20,
+    borderRadius: 10,
+    border: "1px solid #222",
+    flex: 1
+  },
+
+  kpiLabel: {
+    opacity: 0.6,
+    marginBottom: 8
+  },
+
+  kpiValue: {
+    fontSize: 24,
+    fontWeight: 600
+  },
+
+  sectionTitle: {
+    marginBottom: 20
+  },
+
+  table: {
+    width: "100%"
+  },
+
+  th: {
+    textAlign: "left",
+    padding: 10,
+    opacity: 0.7,
+    borderBottom: "1px solid #333"
+  },
+
+  tr: {
+    borderBottom: "1px solid #222"
+  },
+
+  td: {
+    padding: 10
+  }
+
 }
