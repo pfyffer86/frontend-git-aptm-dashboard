@@ -3,6 +3,14 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts"
+
 export default function AssetsPage() {
 
   const [data, setData] = useState(null)
@@ -58,6 +66,8 @@ export default function AssetsPage() {
 
       <KPISection totalValue={totalValue} count={tokens.length} />
 
+      <AllocationChart tokens={sorted} totalValue={totalValue} />
+
       <AssetsTable tokens={sorted} totalValue={totalValue} />
 
       <WalletPlaceholder />
@@ -85,6 +95,78 @@ function KPISection({ totalValue, count }) {
           {count}
         </div>
       </Card>
+
+    </div>
+  )
+}
+
+/* ================= CHART ================= */
+
+function AllocationChart({ tokens, totalValue }) {
+
+  const threshold = 3.5
+
+  const prepared = tokens.map(t => {
+    const value = t.value_usd || 0
+    const allocation = totalValue > 0
+      ? (value / totalValue) * 100
+      : 0
+
+    return {
+      name: t.symbol,
+      value,
+      allocation
+    }
+  })
+
+  let others = 0
+
+  const filtered = prepared.filter(t => {
+    if (t.allocation < threshold) {
+      others += t.value
+      return false
+    }
+    return true
+  })
+
+  if (others > 0) {
+    filtered.push({
+      name: "Others",
+      value: others
+    })
+  }
+
+  return (
+    <div style={styles.card}>
+
+      <h3 style={styles.sectionTitle}>Allocation</h3>
+
+      <div style={{ width: "100%", height: 260 }}>
+
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={filtered}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={2}
+            >
+              {filtered.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getColor(index, entry.name)}
+                />
+              ))}
+            </Pie>
+
+            <Tooltip formatter={(v) => formatUSD(v)} />
+
+          </PieChart>
+        </ResponsiveContainer>
+
+      </div>
 
     </div>
   )
@@ -169,17 +251,11 @@ function AssetsTable({ tokens, totalValue }) {
   )
 }
 
-/* ================= CARD ================= */
+/* ================= COMPONENTS ================= */
 
 function Card({ children }) {
-  return (
-    <div style={styles.card}>
-      {children}
-    </div>
-  )
+  return <div style={styles.card}>{children}</div>
 }
-
-/* ================= PLACEHOLDER ================= */
 
 function WalletPlaceholder() {
   return (
@@ -192,13 +268,9 @@ function WalletPlaceholder() {
   )
 }
 
-/* ================= ALLOCATION ================= */
-
 function AllocationBar({ value, isTop }) {
-
   return (
     <div style={{ minWidth: 120 }}>
-
       <div style={styles.barBg}>
         <div style={{
           width: `${value}%`,
@@ -206,16 +278,14 @@ function AllocationBar({ value, isTop }) {
           height: "100%"
         }} />
       </div>
-
       <div style={styles.barLabel}>
         {value.toFixed(1)}%
       </div>
-
     </div>
   )
 }
 
-/* ================= FORMAT ================= */
+/* ================= HELPERS ================= */
 
 function formatUSD(value) {
   return new Intl.NumberFormat('en-US', {
@@ -237,25 +307,27 @@ function formatAmount(value) {
   }).format(value)
 }
 
+function getColor(index, name) {
+  if (name === "Others") return "#444"
+
+  const palette = [
+    "#22c55e",
+    "#4ade80",
+    "#86efac",
+    "#16a34a",
+    "#15803d"
+  ]
+
+  return palette[index % palette.length]
+}
+
 /* ================= STYLES ================= */
 
 const styles = {
+  page: { padding: 40, color: "#fff" },
+  title: { fontSize: 28, marginBottom: 20 },
 
-  page: {
-    padding: 40,
-    color: "#fff"
-  },
-
-  title: {
-    fontSize: 28,
-    marginBottom: 20
-  },
-
-  kpiRow: {
-    display: "flex",
-    gap: 20,
-    marginBottom: 30
-  },
+  kpiRow: { display: "flex", gap: 20, marginBottom: 30 },
 
   card: {
     background: "#111",
@@ -265,24 +337,12 @@ const styles = {
     flex: 1
   },
 
-  kpiLabel: {
-    opacity: 0.6,
-    marginBottom: 8
-  },
+  kpiLabel: { opacity: 0.6, marginBottom: 8 },
+  kpiValue: { fontSize: 24, fontWeight: 600 },
 
-  kpiValue: {
-    fontSize: 24,
-    fontWeight: 600
-  },
+  sectionTitle: { marginBottom: 20 },
 
-  sectionTitle: {
-    marginBottom: 20
-  },
-
-  table: {
-    width: "100%",
-    borderCollapse: "collapse"
-  },
+  table: { width: "100%", borderCollapse: "collapse" },
 
   th: {
     textAlign: "left",
@@ -303,15 +363,9 @@ const styles = {
     transition: "background 0.2s"
   },
 
-  tdRight: {
-    padding: 10,
-    textAlign: "right"
-  },
+  tdRight: { padding: 10, textAlign: "right" },
 
-  assetCell: {
-    padding: 10,
-    fontWeight: 500
-  },
+  assetCell: { padding: 10, fontWeight: 500 },
 
   barBg: {
     height: 8,
@@ -321,9 +375,5 @@ const styles = {
     marginBottom: 4
   },
 
-  barLabel: {
-    fontSize: 12,
-    opacity: 0.7
-  }
-
+  barLabel: { fontSize: 12, opacity: 0.7 }
 }
