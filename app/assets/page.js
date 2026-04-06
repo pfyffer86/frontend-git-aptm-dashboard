@@ -20,49 +20,77 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  /* ================= LOAD ================= */
+
   async function load(force = false) {
+    try {
+      setLoading(true)
 
-  const { data: sessionData } = await supabase.auth.getSession()
-  const token = sessionData?.session?.access_token
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
 
-  const url = force
-    ? "https://apertum-dashboard-production.up.railway.app/api/dashboard?refresh=true"
-    : "https://apertum-dashboard-production.up.railway.app/api/dashboard"
+      const url = force
+        ? "https://apertum-dashboard-production.up.railway.app/api/dashboard?refresh=true"
+        : "https://apertum-dashboard-production.up.railway.app/api/dashboard"
 
-  const res = await fetch(url, {
-    headers: { Authorization: "Bearer " + token }
-  })
+      const res = await fetch(url, {
+        headers: { Authorization: "Bearer " + token }
+      })
 
-  const json = await res.json()
-  setData(json)
-}
+      if (!res.ok) {
+        throw new Error("API error: " + res.status)
+      }
+
+      const json = await res.json()
+      setData(json)
+
+    } catch (err) {
+      console.error("LOAD ERROR:", err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  /* ================= INIT ================= */
 
   useEffect(() => {
 
-  // sofort Snapshot laden
-  load(false)
+    // sofort Snapshot laden
+    load(false)
 
-  // Soft Refresh
-  setTimeout(() => {
-    load(true)
-  }, 2000)
+    // Soft Refresh im Hintergrund
+    setTimeout(() => {
+      load(true)
+    }, 2000)
 
-}, [])
+  }, [])
+
+  /* ================= STATES ================= */
 
   if (loading) return <div style={{ padding: 40 }}>Loading...</div>
   if (error) return <div style={{ padding: 40 }}>Error: {error}</div>
   if (!data) return null
 
   const totalValue = data.totalValue || 0
-  const wallets = data.wallets || []
-  const tokens = data.tokens || []
+  const wallets = Array.isArray(data.wallets) ? data.wallets : []
+  const tokens = Array.isArray(data.tokens) ? data.tokens : []
 
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
+
+  /* ================= RENDER ================= */
 
   return (
     <div style={styles.page}>
 
-      <h1 style={styles.title}>Assets</h1>
+      {/* HEADER */}
+      <div style={styles.headerRow}>
+        <h1 style={styles.title}>Assets</h1>
+
+        <button style={styles.refreshBtn} onClick={() => load(true)}>
+          ↻ Refresh
+        </button>
+      </div>
 
       <KPISection totalValue={totalValue} count={tokens.length} />
 
@@ -82,10 +110,6 @@ export default function AssetsPage() {
     </div>
   )
 }
-
-<button onClick={() => load(true)}>
-  ↻ Refresh
-</button>
 
 /* ================= KPI ================= */
 
@@ -154,8 +178,10 @@ function AllocationChart({ tokens, totalValue }) {
                 <Cell key={i} fill={getColor(i, e.name)} />
               ))}
             </Pie>
+
             <Tooltip formatter={v => formatUSD(v)} />
             <Legend />
+
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -264,7 +290,7 @@ function WalletDetail({ wallet }) {
 
   if (!wallet) return null
 
-  const tokens = wallet.tokens || []
+  const tokens = Array.isArray(wallet.tokens) ? wallet.tokens : []
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
   return (
@@ -286,12 +312,8 @@ function WalletDetail({ wallet }) {
           {sorted.map((t, i) => (
             <tr key={t.symbol + i}>
               <td>{t.symbol}</td>
-              <td style={styles.right}>
-                {formatAmount(t.amount)}
-              </td>
-              <td style={styles.right}>
-                {formatUSD(t.value_usd)}
-              </td>
+              <td style={styles.right}>{formatAmount(t.amount)}</td>
+              <td style={styles.right}>{formatUSD(t.value_usd)}</td>
             </tr>
           ))}
         </tbody>
@@ -303,23 +325,13 @@ function WalletDetail({ wallet }) {
 /* ================= COMPONENTS ================= */
 
 function Card({ children }) {
-  return (
-    <div style={styles.card}>
-      {children}
-    </div>
-  )
+  return <div style={styles.card}>{children}</div>
 }
 
 function AllocationBar({ value }) {
   return (
     <div style={{ minWidth: 120 }}>
-      <div style={{
-        height: 8,
-        background: "#222",
-        borderRadius: 4,
-        overflow: "hidden",
-        marginBottom: 4
-      }}>
+      <div style={styles.barBg}>
         <div style={{
           width: `${value}%`,
           background: "#4ade80",
@@ -327,7 +339,7 @@ function AllocationBar({ value }) {
         }} />
       </div>
 
-      <div style={{ fontSize: 12, opacity: 0.7 }}>
+      <div style={styles.barLabel}>
         {value.toFixed(1)}%
       </div>
     </div>
@@ -363,7 +375,23 @@ function getColor(i, name) {
 
 const styles = {
   page: { padding: 40, color: "#fff" },
-  title: { fontSize: 28, marginBottom: 20 },
+
+  headerRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+
+  title: { fontSize: 28 },
+
+  refreshBtn: {
+    background: "#222",
+    border: "1px solid #333",
+    padding: "8px 12px",
+    borderRadius: 6,
+    color: "#fff",
+    cursor: "pointer"
+  },
 
   kpiRow: { display: "flex", gap: 20 },
   kpiValue: { fontSize: 20 },
@@ -387,5 +415,15 @@ const styles = {
     borderBottom: "1px solid #222"
   },
 
-  sub: { fontSize: 12, opacity: 0.6 }
+  sub: { fontSize: 12, opacity: 0.6 },
+
+  barBg: {
+    height: 8,
+    background: "#222",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginBottom: 4
+  },
+
+  barLabel: { fontSize: 12, opacity: 0.7 }
 }
