@@ -402,3 +402,4 @@ const styles = {
     fontSize: 12,
     opacity: 0.8
   }
+}
