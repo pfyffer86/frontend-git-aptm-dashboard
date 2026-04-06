@@ -286,6 +286,19 @@ function getColor(i, name) {
   return p[i % p.length]
 }
 
+function Card({ children }) {
+  return (
+    <div style={{
+      background: "#111",
+      padding: 20,
+      borderRadius: 10,
+      border: "1px solid #222"
+    }}>
+      {children}
+    </div>
+  )
+}
+
 /* ================= STYLES ================= */
 
 const styles = {
