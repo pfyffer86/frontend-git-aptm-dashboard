@@ -57,6 +57,7 @@ export default function AssetsPage() {
 
   const totalValue = data.totalValue || 0
   const tokens = data.tokens || []
+  const wallets = data.wallets || []
 
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
@@ -71,7 +72,7 @@ export default function AssetsPage() {
 
       <AssetsTable tokens={sorted} totalValue={totalValue} />
 
-      <WalletPlaceholder />
+      <WalletBreakdown wallets={wallets} totalValue={totalValue} />
 
     </div>
   )
@@ -113,11 +114,7 @@ function AllocationChart({ tokens, totalValue }) {
       ? (value / totalValue) * 100
       : 0
 
-    return {
-      name: t.symbol,
-      value,
-      allocation
-    }
+    return { name: t.symbol, value, allocation }
   })
 
   let others = 0
@@ -131,22 +128,16 @@ function AllocationChart({ tokens, totalValue }) {
   })
 
   if (others > 0) {
-    filtered.push({
-      name: "Others",
-      value: others
-    })
+    filtered.push({ name: "Others", value: others })
   }
 
   return (
     <div style={styles.card}>
-
       <h3 style={styles.sectionTitle}>Allocation</h3>
 
       <div style={{ width: "100%", height: 300 }}>
-
         <ResponsiveContainer>
           <PieChart>
-
             <Pie
               data={filtered}
               dataKey="value"
@@ -161,26 +152,16 @@ function AllocationChart({ tokens, totalValue }) {
               }
             >
               {filtered.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={getColor(index, entry.name)}
-                />
+                <Cell key={index} fill={getColor(index, entry.name)} />
               ))}
             </Pie>
 
             <Tooltip formatter={(v) => formatUSD(v)} />
-
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              formatter={(value) => value}
-            />
+            <Legend verticalAlign="bottom" height={36} />
 
           </PieChart>
         </ResponsiveContainer>
-
       </div>
-
     </div>
   )
 }
@@ -195,7 +176,6 @@ function AssetsTable({ tokens, totalValue }) {
       <h3 style={styles.sectionTitle}>Assets Breakdown</h3>
 
       <table style={styles.table}>
-
         <thead>
           <tr>
             <th style={styles.th}>Asset</th>
@@ -220,22 +200,10 @@ function AssetsTable({ tokens, totalValue }) {
                 ? t.price
                 : (t.amount > 0 ? t.value_usd / t.amount : 0)
 
-            const rowStyle = {
-              ...styles.tr,
-              background: isTop ? "#161616" : "transparent"
-            }
-
             return (
-              <tr
-                key={t.symbol}
-                style={rowStyle}
-                onMouseEnter={e => e.currentTarget.style.background = "#1a1a1a"}
-                onMouseLeave={e => e.currentTarget.style.background = isTop ? "#161616" : "transparent"}
-              >
+              <tr key={t.symbol + index} style={styles.tr}>
 
-                <td style={styles.assetCell}>
-                  {t.symbol}
-                </td>
+                <td style={styles.assetCell}>{t.symbol}</td>
 
                 <td style={styles.tdRight}>
                   {formatAmount(t.amount)}
@@ -257,28 +225,88 @@ function AssetsTable({ tokens, totalValue }) {
             )
           })}
         </tbody>
-
       </table>
 
     </div>
   )
 }
 
+/* ================= WALLET ================= */
+
+function WalletBreakdown({ wallets, totalValue }) {
+
+  if (!wallets.length) return null
+
+  return (
+    <div style={{ ...styles.card, marginTop: 30 }}>
+
+      <h3 style={styles.sectionTitle}>Wallet Breakdown</h3>
+
+      {wallets.map((w, i) => {
+
+        const value = w.totalValue || 0
+        const allocation = totalValue > 0
+          ? (value / totalValue) * 100
+          : 0
+
+        return (
+          <div key={w.address + i} style={styles.walletRow}>
+
+            <div>
+              <div style={styles.walletLabel}>
+                {w.label || "Wallet"}
+              </div>
+              <div style={styles.walletAddress}>
+                {shorten(w.address)}
+              </div>
+            </div>
+
+            <div style={{ textAlign: "right" }}>
+              <div>{formatUSD(value)}</div>
+              <div style={styles.walletPercent}>
+                {allocation.toFixed(1)}%
+              </div>
+            </div>
+
+          </div>
+        )
+      })}
+
+    </div>
+  )
+}
+
+/* ================= HELPERS ================= */
+
+function formatUSD(v) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+  }).format(v || 0)
+}
+
+function formatAmount(v) {
+  if (!v) return "0"
+  if (v < 1) return v.toFixed(6).replace(/\.?0+$/, "")
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 4
+  }).format(v)
+}
+
+function shorten(a) {
+  return a ? a.slice(0, 6) + "..." + a.slice(-4) : ""
+}
+
+function getColor(i, name) {
+  if (name === "Others") return "#2a2a2a"
+  const p = ["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#84cc16","#f97316","#ec4899","#14b8a6"]
+  return p[i % p.length]
+}
+
 /* ================= COMPONENTS ================= */
 
 function Card({ children }) {
   return <div style={styles.card}>{children}</div>
-}
-
-function WalletPlaceholder() {
-  return (
-    <div style={{ ...styles.card, marginTop: 30 }}>
-      <h3>Wallet Breakdown</h3>
-      <p style={{ opacity: 0.6 }}>
-        kommt im nächsten Schritt (API Erweiterung)
-      </p>
-    </div>
-  )
 }
 
 function AllocationBar({ value, isTop }) {
@@ -298,48 +326,6 @@ function AllocationBar({ value, isTop }) {
   )
 }
 
-/* ================= HELPERS ================= */
-
-function formatUSD(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 2
-  }).format(value || 0)
-}
-
-function formatAmount(value) {
-  if (!value) return "0"
-
-  if (value < 1) {
-    return value.toFixed(6).replace(/\.?0+$/, "")
-  }
-
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 4
-  }).format(value)
-}
-
-function getColor(index, name) {
-
-  if (name === "Others") return "#2a2a2a"
-
-  const palette = [
-    "#22c55e", // green
-    "#3b82f6", // blue
-    "#f59e0b", // amber
-    "#ef4444", // red
-    "#8b5cf6", // purple
-    "#06b6d4", // cyan
-    "#84cc16", // lime
-    "#f97316", // orange
-    "#ec4899", // pink
-    "#14b8a6"  // teal
-  ]
-
-  return palette[index % palette.length]
-}
-
 /* ================= STYLES ================= */
 
 const styles = {
@@ -352,35 +338,17 @@ const styles = {
     background: "#111",
     padding: 20,
     borderRadius: 10,
-    border: "1px solid #222",
-    flex: 1
+    border: "1px solid #222"
   },
-
-  kpiLabel: { opacity: 0.6, marginBottom: 8 },
-  kpiValue: { fontSize: 24, fontWeight: 600 },
 
   sectionTitle: { marginBottom: 20 },
 
   table: { width: "100%", borderCollapse: "collapse" },
 
-  th: {
-    textAlign: "left",
-    padding: 10,
-    opacity: 0.7,
-    borderBottom: "1px solid #333"
-  },
+  th: { textAlign: "left", padding: 10, borderBottom: "1px solid #333" },
+  thRight: { textAlign: "right", padding: 10, borderBottom: "1px solid #333" },
 
-  thRight: {
-    textAlign: "right",
-    padding: 10,
-    opacity: 0.7,
-    borderBottom: "1px solid #333"
-  },
-
-  tr: {
-    borderBottom: "1px solid #222",
-    transition: "background 0.2s"
-  },
+  tr: { borderBottom: "1px solid #222" },
 
   tdRight: { padding: 10, textAlign: "right" },
 
@@ -394,12 +362,16 @@ const styles = {
     marginBottom: 4
   },
 
-  barLabel: { fontSize: 12, opacity: 0.7
-},
+  barLabel: { fontSize: 12, opacity: 0.7 },
 
-  legend: {
-    marginTop: 10,
-    fontSize: 12,
-    opacity: 0.8
-  }
+  walletRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "10px 0",
+    borderBottom: "1px solid #222"
+  },
+
+  walletLabel: { fontWeight: 500 },
+  walletAddress: { fontSize: 12, opacity: 0.6 },
+  walletPercent: { fontSize: 12, opacity: 0.6 }
 }
