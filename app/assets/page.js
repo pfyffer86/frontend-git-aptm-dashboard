@@ -58,10 +58,6 @@ export default function AssetsPage() {
 
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
-  const displayTokens = selectedWallet
-    ? selectedWallet.tokens
-    : sorted
-
   return (
     <div style={styles.page}>
 
@@ -69,15 +65,9 @@ export default function AssetsPage() {
 
       <KPISection totalValue={totalValue} count={tokens.length} />
 
-      <AllocationChart
-        tokens={displayTokens}
-        totalValue={totalValue}
-      />
+      <AllocationChart tokens={sorted} totalValue={totalValue} />
 
-      <AssetsTable
-        tokens={displayTokens}
-        totalValue={totalValue}
-      />
+      <AssetsTable tokens={sorted} totalValue={totalValue} />
 
       <WalletBreakdown
         wallets={wallets}
@@ -85,6 +75,8 @@ export default function AssetsPage() {
         selectedWallet={selectedWallet}
         setSelectedWallet={setSelectedWallet}
       />
+
+      <WalletDetail wallet={selectedWallet} />
 
     </div>
   )
@@ -99,6 +91,7 @@ function KPISection({ totalValue, count }) {
         <div>Total Value</div>
         <div style={styles.kpiValue}>{formatUSD(totalValue)}</div>
       </Card>
+
       <Card>
         <div>Assets</div>
         <div style={styles.kpiValue}>{count}</div>
@@ -136,7 +129,7 @@ function AllocationChart({ tokens, totalValue }) {
   }
 
   return (
-    <div style={styles.card}>
+    <Card>
       <h3>Allocation</h3>
 
       <div style={{ height: 300 }}>
@@ -161,7 +154,7 @@ function AllocationChart({ tokens, totalValue }) {
           </PieChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </Card>
   )
 }
 
@@ -170,7 +163,7 @@ function AllocationChart({ tokens, totalValue }) {
 function AssetsTable({ tokens, totalValue }) {
 
   return (
-    <div style={styles.card}>
+    <Card>
       <h3>Assets</h3>
 
       <table style={styles.table}>
@@ -208,7 +201,7 @@ function AssetsTable({ tokens, totalValue }) {
           })}
         </tbody>
       </table>
-    </div>
+    </Card>
   )
 }
 
@@ -222,13 +215,12 @@ function WalletBreakdown({
 }) {
 
   return (
-    <div style={styles.card}>
+    <Card>
       <h3>Wallets</h3>
 
       {wallets.map((w, i) => {
 
         const value = w.totalValue || 0
-
         const active = selectedWallet?.address === w.address
 
         return (
@@ -251,13 +243,55 @@ function WalletBreakdown({
             </div>
 
             <div style={styles.right}>
-              <div>{formatUSD(value)}</div>
+              {formatUSD(value)}
             </div>
 
           </div>
         )
       })}
-    </div>
+    </Card>
+  )
+}
+
+/* ================= WALLET DETAIL ================= */
+
+function WalletDetail({ wallet }) {
+
+  if (!wallet) return null
+
+  const tokens = wallet.tokens || []
+  const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
+
+  return (
+    <Card>
+      <h3>
+        Wallet Detail — {wallet.label || shorten(wallet.address)}
+      </h3>
+
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th style={styles.right}>Amount</th>
+            <th style={styles.right}>Value</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {sorted.map((t, i) => (
+            <tr key={t.symbol + i}>
+              <td>{t.symbol}</td>
+              <td style={styles.right}>
+                {formatAmount(t.amount)}
+              </td>
+              <td style={styles.right}>
+                {formatUSD(t.value_usd)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Card>
   )
 }
 
@@ -272,12 +306,12 @@ function formatUSD(v) {
 
 function formatAmount(v) {
   if (!v) return "0"
-  if (v < 1) return v.toFixed(6)
+  if (v < 1) return v.toFixed(6).replace(/\.?0+$/, "")
   return new Intl.NumberFormat("en-US").format(v)
 }
 
 function shorten(a) {
-  return a?.slice(0, 6) + "..." + a?.slice(-4)
+  return a ? a.slice(0, 6) + "..." + a.slice(-4) : ""
 }
 
 function getColor(i, name) {
@@ -286,14 +320,11 @@ function getColor(i, name) {
   return p[i % p.length]
 }
 
+/* ================= COMPONENT ================= */
+
 function Card({ children }) {
   return (
-    <div style={{
-      background: "#111",
-      padding: 20,
-      borderRadius: 10,
-      border: "1px solid #222"
-    }}>
+    <div style={styles.card}>
       {children}
     </div>
   )
@@ -303,15 +334,29 @@ function Card({ children }) {
 
 const styles = {
   page: { padding: 40, color: "#fff" },
+  title: { fontSize: 28, marginBottom: 20 },
+
   kpiRow: { display: "flex", gap: 20 },
   kpiValue: { fontSize: 20 },
-  card: { background: "#111", padding: 20, marginTop: 20 },
-  table: { width: "100%" },
+
+  card: {
+    background: "#111",
+    padding: 20,
+    borderRadius: 10,
+    border: "1px solid #222",
+    marginTop: 20
+  },
+
+  table: { width: "100%", borderCollapse: "collapse" },
+
   right: { textAlign: "right" },
+
   walletRow: {
     display: "flex",
     justifyContent: "space-between",
-    padding: 10
+    padding: 10,
+    borderBottom: "1px solid #222"
   },
+
   sub: { fontSize: 12, opacity: 0.6 }
 }
