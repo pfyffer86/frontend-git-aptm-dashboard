@@ -20,31 +20,22 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  async function load() {
-    try {
-      setLoading(true)
+  async function load(force = false) {
 
-      const { data: sessionData } = await supabase.auth.getSession()
-      const token = sessionData?.session?.access_token
+  const { data: sessionData } = await supabase.auth.getSession()
+  const token = sessionData?.session?.access_token
 
-      const res = await fetch(
-        "https://apertum-dashboard-production.up.railway.app/api/dashboard",
-        {
-          headers: { Authorization: "Bearer " + token }
-        }
-      )
+  const url = force
+    ? "https://apertum-dashboard-production.up.railway.app/api/dashboard?refresh=true"
+    : "https://apertum-dashboard-production.up.railway.app/api/dashboard"
 
-      if (!res.ok) throw new Error("API error: " + res.status)
+  const res = await fetch(url, {
+    headers: { Authorization: "Bearer " + token }
+  })
 
-      const json = await res.json()
-      setData(json)
-
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const json = await res.json()
+  setData(json)
+}
 
   useEffect(() => { load() }, [])
 
