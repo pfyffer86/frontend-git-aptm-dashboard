@@ -37,7 +37,17 @@ export default function AssetsPage() {
   setData(json)
 }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {
+
+  // sofort Snapshot laden
+  load(false)
+
+  // Soft Refresh
+  setTimeout(() => {
+    load(true)
+  }, 2000)
+
+}, [])
 
   if (loading) return <div style={{ padding: 40 }}>Loading...</div>
   if (error) return <div style={{ padding: 40 }}>Error: {error}</div>
@@ -72,6 +82,10 @@ export default function AssetsPage() {
     </div>
   )
 }
+
+<button onClick={() => load(true)}>
+  ↻ Refresh
+</button>
 
 /* ================= KPI ================= */
 
