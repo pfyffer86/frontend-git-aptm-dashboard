@@ -15,6 +15,8 @@ import {
 export default function AssetsPage() {
 
   const [data, setData] = useState(null)
+  const [selectedWallet, setSelectedWallet] = useState(null)
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -28,9 +30,7 @@ export default function AssetsPage() {
       const res = await fetch(
         "https://apertum-dashboard-production.up.railway.app/api/dashboard",
         {
-          headers: {
-            Authorization: "Bearer " + token
-          }
+          headers: { Authorization: "Bearer " + token }
         }
       )
 
@@ -40,26 +40,27 @@ export default function AssetsPage() {
       setData(json)
 
     } catch (err) {
-      console.error("ASSETS ERROR:", err)
       setError(err.message)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    load()
-  }, [])
+  useEffect(() => { load() }, [])
 
   if (loading) return <div style={{ padding: 40 }}>Loading...</div>
   if (error) return <div style={{ padding: 40 }}>Error: {error}</div>
   if (!data) return null
 
   const totalValue = data.totalValue || 0
-  const tokens = data.tokens || []
   const wallets = data.wallets || []
+  const tokens = data.tokens || []
 
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
+
+  const displayTokens = selectedWallet
+    ? selectedWallet.tokens
+    : sorted
 
   return (
     <div style={styles.page}>
@@ -68,11 +69,22 @@ export default function AssetsPage() {
 
       <KPISection totalValue={totalValue} count={tokens.length} />
 
-      <AllocationChart tokens={sorted} totalValue={totalValue} />
+      <AllocationChart
+        tokens={displayTokens}
+        totalValue={totalValue}
+      />
 
-      <AssetsTable tokens={sorted} totalValue={totalValue} />
+      <AssetsTable
+        tokens={displayTokens}
+        totalValue={totalValue}
+      />
 
-      <WalletBreakdown wallets={wallets} totalValue={totalValue} />
+      <WalletBreakdown
+        wallets={wallets}
+        totalValue={totalValue}
+        selectedWallet={selectedWallet}
+        setSelectedWallet={setSelectedWallet}
+      />
 
     </div>
   )
@@ -83,21 +95,14 @@ export default function AssetsPage() {
 function KPISection({ totalValue, count }) {
   return (
     <div style={styles.kpiRow}>
-
       <Card>
-        <div style={styles.kpiLabel}>Total Assets Value</div>
-        <div style={styles.kpiValue}>
-          {formatUSD(totalValue)}
-        </div>
+        <div>Total Value</div>
+        <div style={styles.kpiValue}>{formatUSD(totalValue)}</div>
       </Card>
-
       <Card>
-        <div style={styles.kpiLabel}>Tracked Assets</div>
-        <div style={styles.kpiValue}>
-          {count}
-        </div>
+        <div>Assets</div>
+        <div style={styles.kpiValue}>{count}</div>
       </Card>
-
     </div>
   )
 }
@@ -113,7 +118,6 @@ function AllocationChart({ tokens, totalValue }) {
     const allocation = totalValue > 0
       ? (value / totalValue) * 100
       : 0
-
     return { name: t.symbol, value, allocation }
   })
 
@@ -133,9 +137,9 @@ function AllocationChart({ tokens, totalValue }) {
 
   return (
     <div style={styles.card}>
-      <h3 style={styles.sectionTitle}>Allocation</h3>
+      <h3>Allocation</h3>
 
-      <div style={{ width: "100%", height: 300 }}>
+      <div style={{ height: 300 }}>
         <ResponsiveContainer>
           <PieChart>
             <Pie
@@ -144,21 +148,16 @@ function AllocationChart({ tokens, totalValue }) {
               nameKey="name"
               innerRadius={70}
               outerRadius={110}
-              paddingAngle={3}
               label={({ percent }) =>
-                percent > 0.04
-                  ? `${(percent * 100).toFixed(0)}%`
-                  : ""
+                percent > 0.04 ? `${(percent * 100).toFixed(0)}%` : ""
               }
             >
-              {filtered.map((entry, index) => (
-                <Cell key={index} fill={getColor(index, entry.name)} />
+              {filtered.map((e, i) => (
+                <Cell key={i} fill={getColor(i, e.name)} />
               ))}
             </Pie>
-
-            <Tooltip formatter={(v) => formatUSD(v)} />
-            <Legend verticalAlign="bottom" height={36} />
-
+            <Tooltip formatter={v => formatUSD(v)} />
+            <Legend />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -172,106 +171,92 @@ function AssetsTable({ tokens, totalValue }) {
 
   return (
     <div style={styles.card}>
-
-      <h3 style={styles.sectionTitle}>Assets Breakdown</h3>
+      <h3>Assets</h3>
 
       <table style={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>Asset</th>
-            <th style={styles.thRight}>Balance</th>
-            <th style={styles.thRight}>Price</th>
-            <th style={styles.thRight}>Value</th>
-            <th style={styles.thRight}>Allocation</th>
+            <th>Asset</th>
+            <th style={styles.right}>Balance</th>
+            <th style={styles.right}>Price</th>
+            <th style={styles.right}>Value</th>
+            <th style={styles.right}>Allocation</th>
           </tr>
         </thead>
 
         <tbody>
-          {tokens.map((t, index) => {
-
-            const isTop = index === 0
+          {tokens.map((t, i) => {
 
             const allocation = totalValue > 0
               ? (t.value_usd / totalValue) * 100
               : 0
 
             const price =
-              t.price && t.price > 0
-                ? t.price
-                : (t.amount > 0 ? t.value_usd / t.amount : 0)
+              t.price || (t.amount ? t.value_usd / t.amount : 0)
 
             return (
-              <tr key={t.symbol + index} style={styles.tr}>
-
-                <td style={styles.assetCell}>{t.symbol}</td>
-
-                <td style={styles.tdRight}>
-                  {formatAmount(t.amount)}
+              <tr key={t.symbol + i}>
+                <td>{t.symbol}</td>
+                <td style={styles.right}>{formatAmount(t.amount)}</td>
+                <td style={styles.right}>{formatUSD(price)}</td>
+                <td style={styles.right}>{formatUSD(t.value_usd)}</td>
+                <td style={styles.right}>
+                  {allocation.toFixed(1)}%
                 </td>
-
-                <td style={styles.tdRight}>
-                  {formatUSD(price)}
-                </td>
-
-                <td style={styles.tdRight}>
-                  {formatUSD(t.value_usd)}
-                </td>
-
-                <td style={styles.tdRight}>
-                  <AllocationBar value={allocation} isTop={isTop} />
-                </td>
-
               </tr>
             )
           })}
         </tbody>
       </table>
-
     </div>
   )
 }
 
 /* ================= WALLET ================= */
 
-function WalletBreakdown({ wallets, totalValue }) {
-
-  if (!wallets.length) return null
+function WalletBreakdown({
+  wallets,
+  totalValue,
+  selectedWallet,
+  setSelectedWallet
+}) {
 
   return (
-    <div style={{ ...styles.card, marginTop: 30 }}>
-
-      <h3 style={styles.sectionTitle}>Wallet Breakdown</h3>
+    <div style={styles.card}>
+      <h3>Wallets</h3>
 
       {wallets.map((w, i) => {
 
         const value = w.totalValue || 0
-        const allocation = totalValue > 0
-          ? (value / totalValue) * 100
-          : 0
+
+        const active = selectedWallet?.address === w.address
 
         return (
-          <div key={w.address + i} style={styles.walletRow}>
-
+          <div
+            key={w.address + i}
+            style={{
+              ...styles.walletRow,
+              background: active ? "#1a1a1a" : "transparent",
+              cursor: "pointer"
+            }}
+            onClick={() =>
+              setSelectedWallet(active ? null : w)
+            }
+          >
             <div>
-              <div style={styles.walletLabel}>
-                {w.label || "Wallet"}
-              </div>
-              <div style={styles.walletAddress}>
+              <div>{w.label || "Wallet"}</div>
+              <div style={styles.sub}>
                 {shorten(w.address)}
               </div>
             </div>
 
-            <div style={{ textAlign: "right" }}>
+            <div style={styles.right}>
               <div>{formatUSD(value)}</div>
-              <div style={styles.walletPercent}>
-                {allocation.toFixed(1)}%
-              </div>
             </div>
 
           </div>
         )
       })}
-
     </div>
   )
 }
@@ -287,91 +272,33 @@ function formatUSD(v) {
 
 function formatAmount(v) {
   if (!v) return "0"
-  if (v < 1) return v.toFixed(6).replace(/\.?0+$/, "")
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 4
-  }).format(v)
+  if (v < 1) return v.toFixed(6)
+  return new Intl.NumberFormat("en-US").format(v)
 }
 
 function shorten(a) {
-  return a ? a.slice(0, 6) + "..." + a.slice(-4) : ""
+  return a?.slice(0, 6) + "..." + a?.slice(-4)
 }
 
 function getColor(i, name) {
-  if (name === "Others") return "#2a2a2a"
-  const p = ["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#06b6d4","#84cc16","#f97316","#ec4899","#14b8a6"]
+  if (name === "Others") return "#333"
+  const p = ["#22c55e","#3b82f6","#f59e0b","#ef4444","#8b5cf6","#06b6d4"]
   return p[i % p.length]
-}
-
-/* ================= COMPONENTS ================= */
-
-function Card({ children }) {
-  return <div style={styles.card}>{children}</div>
-}
-
-function AllocationBar({ value, isTop }) {
-  return (
-    <div style={{ minWidth: 120 }}>
-      <div style={styles.barBg}>
-        <div style={{
-          width: `${value}%`,
-          background: isTop ? "#22c55e" : "#4ade80",
-          height: "100%"
-        }} />
-      </div>
-      <div style={styles.barLabel}>
-        {value.toFixed(1)}%
-      </div>
-    </div>
-  )
 }
 
 /* ================= STYLES ================= */
 
 const styles = {
   page: { padding: 40, color: "#fff" },
-  title: { fontSize: 28, marginBottom: 20 },
-
-  kpiRow: { display: "flex", gap: 20, marginBottom: 30 },
-
-  card: {
-    background: "#111",
-    padding: 20,
-    borderRadius: 10,
-    border: "1px solid #222"
-  },
-
-  sectionTitle: { marginBottom: 20 },
-
-  table: { width: "100%", borderCollapse: "collapse" },
-
-  th: { textAlign: "left", padding: 10, borderBottom: "1px solid #333" },
-  thRight: { textAlign: "right", padding: 10, borderBottom: "1px solid #333" },
-
-  tr: { borderBottom: "1px solid #222" },
-
-  tdRight: { padding: 10, textAlign: "right" },
-
-  assetCell: { padding: 10, fontWeight: 500 },
-
-  barBg: {
-    height: 8,
-    background: "#222",
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 4
-  },
-
-  barLabel: { fontSize: 12, opacity: 0.7 },
-
+  kpiRow: { display: "flex", gap: 20 },
+  kpiValue: { fontSize: 20 },
+  card: { background: "#111", padding: 20, marginTop: 20 },
+  table: { width: "100%" },
+  right: { textAlign: "right" },
   walletRow: {
     display: "flex",
     justifyContent: "space-between",
-    padding: "10px 0",
-    borderBottom: "1px solid #222"
+    padding: 10
   },
-
-  walletLabel: { fontWeight: 500 },
-  walletAddress: { fontSize: 12, opacity: 0.6 },
-  walletPercent: { fontSize: 12, opacity: 0.6 }
+  sub: { fontSize: 12, opacity: 0.6 }
 }
