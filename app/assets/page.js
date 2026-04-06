@@ -8,7 +8,8 @@ import {
   Pie,
   Cell,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Legend
 } from "recharts"
 
 export default function AssetsPage() {
@@ -141,17 +142,23 @@ function AllocationChart({ tokens, totalValue }) {
 
       <h3 style={styles.sectionTitle}>Allocation</h3>
 
-      <div style={{ width: "100%", height: 260 }}>
+      <div style={{ width: "100%", height: 300 }}>
 
         <ResponsiveContainer>
           <PieChart>
+
             <Pie
               data={filtered}
               dataKey="value"
               nameKey="name"
-              innerRadius={60}
-              outerRadius={100}
-              paddingAngle={2}
+              innerRadius={70}
+              outerRadius={110}
+              paddingAngle={3}
+              label={({ percent }) =>
+                percent > 0.04
+                  ? `${(percent * 100).toFixed(0)}%`
+                  : ""
+              }
             >
               {filtered.map((entry, index) => (
                 <Cell
@@ -162,6 +169,12 @@ function AllocationChart({ tokens, totalValue }) {
             </Pie>
 
             <Tooltip formatter={(v) => formatUSD(v)} />
+
+            <Legend
+              verticalAlign="bottom"
+              height={36}
+              formatter={(value) => value}
+            />
 
           </PieChart>
         </ResponsiveContainer>
@@ -308,14 +321,20 @@ function formatAmount(value) {
 }
 
 function getColor(index, name) {
-  if (name === "Others") return "#444"
+
+  if (name === "Others") return "#2a2a2a"
 
   const palette = [
-    "#22c55e",
-    "#4ade80",
-    "#86efac",
-    "#16a34a",
-    "#15803d"
+    "#22c55e", // green
+    "#3b82f6", // blue
+    "#f59e0b", // amber
+    "#ef4444", // red
+    "#8b5cf6", // purple
+    "#06b6d4", // cyan
+    "#84cc16", // lime
+    "#f97316", // orange
+    "#ec4899", // pink
+    "#14b8a6"  // teal
   ]
 
   return palette[index % palette.length]
@@ -376,4 +395,10 @@ const styles = {
   },
 
   barLabel: { fontSize: 12, opacity: 0.7 }
-}
+},
+
+  legend: {
+    marginTop: 10,
+    fontSize: 12,
+    opacity: 0.8
+  }
