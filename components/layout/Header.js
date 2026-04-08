@@ -1,46 +1,31 @@
 "use client"
 
-import { useState } from "react"
-
 export default function Header() {
-
-  const [open, setOpen] = useState(false)
-
   return (
     <div className="header">
 
-      <div />
+      <button style={{
+        padding: "8px 14px",
+        borderRadius: 8,
+        border: "1px solid #e6e8ec",
+        background: "#fff",
+        cursor: "pointer",
+        marginRight: 12
+      }}>
+        Refresh
+      </button>
 
-      <div className="header-right">
-
-        <button className="button">
-          Refresh
-        </button>
-
-        <div className="user" onClick={() => setOpen(!open)}>
-          U
-        </div>
-
-        {open && (
-          <div className="dropdown">
-
-            <div className="dropdown-label">
-              Logged in as
-            </div>
-
-            <div className="dropdown-email">
-              user@email.com
-            </div>
-
-            <div className="dropdown-divider" />
-
-            <div className="dropdown-item">
-              Logout
-            </div>
-
-          </div>
-        )}
-
+      <div style={{
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        background: "#eee",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 12
+      }}>
+        U
       </div>
 
     </div>
