@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
+/* ================= ICON ================= */
+
+function getTokenIcon(token) {
+  if (!token.price_symbol) return null
+
+  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${token.price_symbol.toLowerCase()}.png`
+}
+
+/* ================= PAGE ================= */
+
 export default function AssetsPage() {
 
   const [data, setData] = useState(null)
@@ -42,8 +52,8 @@ export default function AssetsPage() {
     load()
   }, [])
 
-  if (loading) return <div style={{ padding: 40 }}>Loading...</div>
-  if (error) return <div style={{ padding: 40 }}>Error: {error}</div>
+  if (loading) return <div className="page">Loading...</div>
+  if (error) return <div className="page">Error: {error}</div>
   if (!data) return null
 
   const totalValue = data.totalValue || 0
@@ -52,172 +62,132 @@ export default function AssetsPage() {
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
   return (
-    <div style={styles.page}>
+    <div className="page">
 
-      <h1 style={styles.title}>Assets</h1>
+      <h1>Assets</h1>
 
-      <KPISection totalValue={totalValue} count={tokens.length} />
+      <div className="row mb-30">
 
-      <AssetsTable tokens={sorted} totalValue={totalValue} />
-
-      <WalletBreakdown wallets={data.wallets} />
-
-    </div>
-  )
-}
-
-/* ================= KPI ================= */
-
-function KPISection({ totalValue, count }) {
-  return (
-    <div style={styles.kpiRow}>
-
-      <Card>
-        <div style={styles.kpiLabel}>Total Assets Value</div>
-        <div style={styles.kpiValue}>
-          {formatUSD(totalValue)}
+        <div className="card kpi">
+          <div className="kpi-label">Total Assets Value</div>
+          <div className="kpi-value">{formatUSD(totalValue)}</div>
         </div>
-      </Card>
 
-      <Card>
-        <div style={styles.kpiLabel}>Tracked Assets</div>
-        <div style={styles.kpiValue}>
-          {count}
+        <div className="card kpi">
+          <div className="kpi-label">Tracked Assets</div>
+          <div className="kpi-value">{tokens.length}</div>
         </div>
-      </Card>
 
-    </div>
-  )
-}
+      </div>
 
-/* ================= TABLE ================= */
+      <div className="card">
 
-function AssetsTable({ tokens, totalValue }) {
+        <h3 className="mb-20">Assets Breakdown</h3>
 
-  return (
-    <div style={styles.card}>
+        <table className="table">
 
-      <h3 style={styles.sectionTitle}>Assets Breakdown</h3>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Balance</th>
+              <th>Price</th>
+              <th>Value</th>
+              <th>Allocation</th>
+            </tr>
+          </thead>
 
-      <table style={styles.table}>
+          <tbody>
+            {sorted.map(t => {
 
-        <thead>
-          <tr>
-            <th style={styles.th}>Asset</th>
-            <th style={styles.th}>Balance</th>
-            <th style={styles.th}>Price</th>
-            <th style={styles.th}>Value</th>
-            <th style={styles.th}>Allocation</th>
-          </tr>
-        </thead>
+              const allocation = totalValue > 0
+                ? (t.value_usd / totalValue) * 100
+                : 0
 
-        <tbody>
-          {tokens.map(t => {
+              const price =
+                t.price && t.price > 0
+                  ? t.price
+                  : (t.amount > 0 ? t.value_usd / t.amount : 0)
 
-            const allocation = totalValue > 0
-              ? (t.value_usd / totalValue) * 100
-              : 0
+              const icon = getTokenIcon(t)
 
-            const price =
-              t.price && t.price > 0
-                ? t.price
-                : (t.amount > 0 ? t.value_usd / t.amount : 0)
+              return (
+                <tr key={t.symbol}>
 
-            return (
-              <tr key={t.symbol} style={styles.tr}>
+                  {/* TOKEN */}
+                  <td>
+                    <div className="token">
 
-                <td style={styles.td}>{t.symbol}</td>
+                      {icon && (
+                        <img
+                          src={icon}
+                          alt={t.symbol}
+                          onError={(e) => {
+                            e.target.style.display = "none"
+                          }}
+                        />
+                      )}
 
-                <td style={styles.td}>
-                  {formatAmount(t.amount)}
-                </td>
+                      <span>{t.symbol}</span>
+                    </div>
+                  </td>
 
-                <td style={styles.td}>
-                  {formatUSD(price)}
-                </td>
+                  <td>{formatAmount(t.amount)}</td>
 
-                <td style={styles.td}>
-                  {formatUSD(t.value_usd)}
-                </td>
+                  <td>{formatUSD(price)}</td>
 
-                <td style={styles.td}>
-                  <AllocationBar value={allocation} />
-                </td>
+                  <td>{formatUSD(t.value_usd)}</td>
 
-              </tr>
-            )
-          })}
-        </tbody>
+                  <td>
+                    <div className="allocation">
 
-      </table>
+                      <div className="allocation-bar">
+                        <div
+                          className="allocation-fill"
+                          style={{ width: `${allocation}%` }}
+                        />
+                      </div>
 
-    </div>
-  )
-}
+                      <div className="allocation-text">
+                        {allocation.toFixed(1)}%
+                      </div>
 
-/* ================= WALLET BREAKDOWN ================= */
+                    </div>
+                  </td>
 
-function WalletBreakdown({ wallets }) {
+                </tr>
+              )
+            })}
+          </tbody>
 
-  if (!wallets || wallets.length === 0) return null
+        </table>
 
-  return (
-    <div style={{ ...styles.card, marginTop: 30 }}>
+      </div>
 
-      <h3 style={styles.sectionTitle}>Wallet Breakdown</h3>
+      {/* WALLET BREAKDOWN */}
 
-      {wallets.map(w => (
-        <div key={w.id} style={{
-          padding: "12px 0",
-          borderBottom: "1px solid #222"
-        }}>
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between"
+      <div className="card mt-30">
+
+        <h3 className="mb-20">Wallet Breakdown</h3>
+
+        {data.wallets.map(w => (
+          <div key={w.id} style={{
+            padding: "12px 0",
+            borderBottom: "1px solid #1a1a1a"
           }}>
-            <div style={{ opacity: 0.8 }}>
-              {w.label || w.address.slice(0, 6)}
-            </div>
-            <div>
-              {formatUSD(w.totalValue)}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between"
+            }}>
+              <div className="text-secondary">
+                {w.label || w.address.slice(0, 6)}
+              </div>
+              <div>{formatUSD(w.totalValue)}</div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-    </div>
-  )
-}
-
-/* ================= REUSABLE ================= */
-
-function Card({ children }) {
-  return (
-    <div style={styles.card}>
-      {children}
-    </div>
-  )
-}
-
-function AllocationBar({ value }) {
-  return (
-    <div style={{ minWidth: 120 }}>
-      <div style={{
-        height: 6,
-        background: "#222",
-        borderRadius: 4,
-        overflow: "hidden",
-        marginBottom: 4
-      }}>
-        <div style={{
-          width: `${value}%`,
-          background: "#4ade80",
-          height: "100%"
-        }} />
       </div>
-      <div style={{ fontSize: 12, opacity: 0.7 }}>
-        {value.toFixed(1)}%
-      </div>
+
     </div>
   )
 }
@@ -225,81 +195,20 @@ function AllocationBar({ value }) {
 /* ================= FORMAT ================= */
 
 function formatUSD(value) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     maximumFractionDigits: 2
   }).format(value || 0)
 }
 
 function formatAmount(value) {
   if (!value) return "0"
+
   if (value < 0.0001) return value.toExponential(2)
   if (value < 1) return value.toFixed(6)
-  return new Intl.NumberFormat('en-US', {
+
+  return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 4
   }).format(value)
-}
-
-/* ================= STYLES ================= */
-
-const styles = {
-
-  page: {
-    padding: 40,
-    color: "#fff"
-  },
-
-  title: {
-    fontSize: 28,
-    marginBottom: 20
-  },
-
-  kpiRow: {
-    display: "flex",
-    gap: 20,
-    marginBottom: 30
-  },
-
-  card: {
-    background: "#111",
-    padding: 20,
-    borderRadius: 10,
-    border: "1px solid #222",
-    flex: 1
-  },
-
-  kpiLabel: {
-    opacity: 0.6,
-    marginBottom: 8
-  },
-
-  kpiValue: {
-    fontSize: 24,
-    fontWeight: 600
-  },
-
-  sectionTitle: {
-    marginBottom: 20
-  },
-
-  table: {
-    width: "100%"
-  },
-
-  th: {
-    textAlign: "left",
-    padding: 10,
-    opacity: 0.7,
-    borderBottom: "1px solid #333"
-  },
-
-  tr: {
-    borderBottom: "1px solid #222"
-  },
-
-  td: {
-    padding: 10
-  }
-
 }
