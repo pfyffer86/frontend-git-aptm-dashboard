@@ -244,3 +244,41 @@ h3 {
 .text-secondary {
   color: var(--text-secondary);
 }
+
+/* SIDEBAR STRUCTURE */
+
+.sidebar-logo {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 32px;
+  color: white;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+/* (bestehende sidebar styles werden erweitert) */
+
+.sidebar a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+
+  text-decoration: none;
+  color: var(--text-secondary);
+
+  transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: white;
+}
+
+.sidebar a.active {
+  background: rgba(99, 102, 241, 0.2);
+  color: white;
+}
