@@ -60,7 +60,7 @@ export default function AssetsPage() {
 
       <AssetsTable tokens={sorted} totalValue={totalValue} />
 
-      <WalletPlaceholder />
+      <WalletBreakdown wallets={data.wallets} />
 
     </div>
   )
@@ -140,9 +140,9 @@ function AssetsTable({ tokens, totalValue }) {
                   {formatUSD(t.value_usd)}
                 </td>
 
-               <td style={styles.td}>
-                 <AllocationBar value={allocation} />
-               </td>
+                <td style={styles.td}>
+                  <AllocationBar value={allocation} />
+                </td>
 
               </tr>
             )
@@ -155,7 +155,41 @@ function AssetsTable({ tokens, totalValue }) {
   )
 }
 
-/* ================= REUSABLE CARD ================= */
+/* ================= WALLET BREAKDOWN ================= */
+
+function WalletBreakdown({ wallets }) {
+
+  if (!wallets || wallets.length === 0) return null
+
+  return (
+    <div style={{ ...styles.card, marginTop: 30 }}>
+
+      <h3 style={styles.sectionTitle}>Wallet Breakdown</h3>
+
+      {wallets.map(w => (
+        <div key={w.id} style={{
+          padding: "12px 0",
+          borderBottom: "1px solid #222"
+        }}>
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between"
+          }}>
+            <div style={{ opacity: 0.8 }}>
+              {w.label || w.address.slice(0, 6)}
+            </div>
+            <div>
+              {formatUSD(w.totalValue)}
+            </div>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  )
+}
+
+/* ================= REUSABLE ================= */
 
 function Card({ children }) {
   return (
@@ -165,26 +199,9 @@ function Card({ children }) {
   )
 }
 
-/* ================= PLACEHOLDER ================= */
-
-function WalletPlaceholder() {
-  return (
-    <div style={{ ...styles.card, marginTop: 30 }}>
-      <h3>Wallet Breakdown</h3>
-      <p style={{ opacity: 0.6 }}>
-        kommt im nächsten Schritt (API Erweiterung)
-      </p>
-    </div>
-  )
-}
-
-/* ================= Allocation Bar ================= */
-
 function AllocationBar({ value }) {
-
   return (
     <div style={{ minWidth: 120 }}>
-
       <div style={{
         height: 6,
         background: "#222",
@@ -198,11 +215,9 @@ function AllocationBar({ value }) {
           height: "100%"
         }} />
       </div>
-
       <div style={{ fontSize: 12, opacity: 0.7 }}>
         {value.toFixed(1)}%
       </div>
-
     </div>
   )
 }
@@ -219,15 +234,8 @@ function formatUSD(value) {
 
 function formatAmount(value) {
   if (!value) return "0"
-
-  if (value < 0.0001) {
-    return value.toExponential(2)
-  }
-
-  if (value < 1) {
-    return value.toFixed(6)
-  }
-
+  if (value < 0.0001) return value.toExponential(2)
+  if (value < 1) return value.toFixed(6)
   return new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 4
   }).format(value)
