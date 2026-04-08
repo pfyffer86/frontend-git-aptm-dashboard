@@ -16,31 +16,21 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
 
-      <div style={{
-        fontWeight: 600,
-        fontSize: 18,
-        marginBottom: 30
-      }}>
+      <div className="sidebar-logo">
         Apertum
       </div>
 
-      {items.map(i => (
-        <Link
-          key={i.href}
-          href={i.href}
-          style={{
-            display: "block",
-            padding: "10px 12px",
-            borderRadius: 8,
-            marginBottom: 6,
-            background: path === i.href ? "#f1f3f5" : "transparent",
-            textDecoration: "none",
-            color: "#111"
-          }}
-        >
-          {i.label}
-        </Link>
-      ))}
+      <div className="sidebar-nav">
+        {items.map(i => (
+          <Link
+            key={i.href}
+            href={i.href}
+            className={path === i.href ? "active" : ""}
+          >
+            {i.label}
+          </Link>
+        ))}
+      </div>
 
     </div>
   )
