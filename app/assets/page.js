@@ -17,13 +17,16 @@ function getTokenIcon(token) {
     APTM: 36215
   }
 
-  const key =
+    const key =
     token.price_symbol ||
     token.symbol.replace("w", "")
 
   const id = map[key]
 
-  if (!id) return null
+  // ✅ FALLBACK ICON (neutral, sauber)
+  const fallback = "https://cdn-icons-png.flaticon.com/512/616/616494.png"
+
+  if (!id) return fallback
 
   return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`
 }
