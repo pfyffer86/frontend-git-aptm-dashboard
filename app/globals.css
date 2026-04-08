@@ -1,7 +1,226 @@
-body {
+/* =====================================================
+BASE RESET
+===================================================== */
+
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: #0b0b0b;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================
+TYPOGRAPHY SYSTEM
+===================================================== */
+
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.text-secondary {
+  color: rgba(255,255,255,0.6);
+}
+
+.text-muted {
+  color: rgba(255,255,255,0.4);
+}
+
+.text-small {
+  font-size: 12px;
+}
+
+/* =====================================================
+LAYOUT FOUNDATION
+===================================================== */
+
+.page {
+  padding: 40px;
+}
+
+/* =====================================================
+CARD SYSTEM
+===================================================== */
+
+.card {
   background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.08);
+  border-color: #2a2a2a;
+}
+
+/* KPI CARD */
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* =====================================================
+TABLE SYSTEM
+===================================================== */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  padding: 12px 10px;
+  border-bottom: 1px solid #222;
+}
+
+.table td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #1a1a1a;
+  font-size: 14px;
+}
+
+.table tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* =====================================================
+TOKEN CELL
+===================================================== */
+
+.token {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.token img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+/* =====================================================
+ALLOCATION BAR
+===================================================== */
+
+.allocation {
+  min-width: 120px;
+}
+
+.allocation-bar {
+  height: 6px;
+  background: #222;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.allocation-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #4ade80,
+    #22c55e
+  );
+}
+
+.allocation-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* =====================================================
+BUTTON SYSTEM
+===================================================== */
+
+.button {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
   color: #fff;
-  font-family: Arial, sans-serif;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background: #222;
+  border-color: #333;
+}
+
+/* =====================================================
+SPACING HELPERS
+===================================================== */
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.mt-20 { margin-top: 20px; }
+.mt-30 { margin-top: 30px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-30 { margin-bottom: 30px; }
+
+/* =====================================================
+SCROLLBAR (SUBTLE)
+===================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0b0b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
 }
