@@ -6,9 +6,26 @@ import { supabase } from "../../lib/supabase"
 /* ================= ICON ================= */
 
 function getTokenIcon(token) {
-  if (!token.price_symbol) return null
 
-  return `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${token.price_symbol.toLowerCase()}.png`
+  const map = {
+    BTC: 1,
+    ETH: 1027,
+    USDT: 825,
+    USDC: 3408,
+    SOL: 5426,
+    AVAX: 5805,
+    APT: 21794
+  }
+
+  const key =
+    token.price_symbol ||
+    token.symbol.replace("w", "")
+
+  const id = map[key]
+
+  if (!id) return null
+
+  return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`
 }
 
 /* ================= PAGE ================= */
