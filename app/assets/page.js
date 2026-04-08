@@ -14,7 +14,7 @@ function getTokenIcon(token) {
     USDC: 3408,
     SOL: 5426,
     AVAX: 5805,
-    APTM: 21794
+    APTM: 36215
   }
 
   const key =
