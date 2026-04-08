@@ -4,16 +4,9 @@ export default function Header() {
   return (
     <div className="header">
 
-      <button style={{
-        padding: "8px 14px",
-        borderRadius: 8,
-        border: "1px solid #e6e8ec",
-        background: "#fff",
-        cursor: "pointer",
-        marginRight: 12
-      }}>
-        Refresh
-      </button>
+      <button className="button-primary">
+  Refresh
+</button>
 
       <div style={{
         width: 32,
