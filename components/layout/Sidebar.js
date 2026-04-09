@@ -73,7 +73,7 @@ export default function Sidebar() {
       </Link>
 
       <Link href="/staking" className={isActive("/staking") ? "active" : ""}>
-        <IconLayers size={18} />
+        <IconLStack2 size={18} />
         <span>Staking</span>
       </Link>
 
