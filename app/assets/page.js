@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
-/* ================= ICON ================= */
+/* ICON */
 
 function getTokenIcon(token) {
-
   const map = {
     BTC: 1,
     ETH: 1027,
@@ -17,21 +16,18 @@ function getTokenIcon(token) {
     APTM: 36215
   }
 
-    const key =
+  const key =
     token.price_symbol ||
     token.symbol.replace("w", "")
 
   const id = map[key]
 
-  // ✅ FALLBACK ICON (neutral, sauber)
-  const fallback = "https://cdn-icons-png.flaticon.com/512/616/616494.png"
-
-  if (!id) return fallback
+  if (!id) return null
 
   return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`
 }
 
-/* ================= PAGE ================= */
+/* PAGE */
 
 export default function AssetsPage() {
 
@@ -72,8 +68,8 @@ export default function AssetsPage() {
     load()
   }, [])
 
-  if (loading) return <div className="page">Loading...</div>
-  if (error) return <div className="page">Error: {error}</div>
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
   if (!data) return null
 
   const totalValue = data.totalValue || 0
@@ -82,27 +78,29 @@ export default function AssetsPage() {
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
   return (
-    <div className="page">
+    <div>
 
       <h1>Assets</h1>
 
-      <div className="row mb-30">
+      {/* KPI */}
+      <div className="kpi-grid">
 
-        <div className="card kpi">
+        <div className="card">
           <div className="kpi-label">Total Assets Value</div>
           <div className="kpi-value">{formatUSD(totalValue)}</div>
         </div>
 
-        <div className="card kpi">
+        <div className="card">
           <div className="kpi-label">Tracked Assets</div>
           <div className="kpi-value">{tokens.length}</div>
         </div>
 
       </div>
 
+      {/* TABLE */}
       <div className="card">
 
-        <h3 className="mb-20">Assets Breakdown</h3>
+        <h3 style={{ marginBottom: 16 }}>Assets Breakdown</h3>
 
         <table className="table">
 
@@ -133,7 +131,6 @@ export default function AssetsPage() {
               return (
                 <tr key={t.symbol}>
 
-                  {/* TOKEN */}
                   <td>
                     <div className="token">
 
@@ -143,18 +140,21 @@ export default function AssetsPage() {
                           alt={t.symbol}
                           onError={(e) => {
                             e.target.style.display = "none"
+                            e.target.nextSibling.style.display = "flex"
                           }}
                         />
                       )}
+
+                      <div className="token-fallback">
+                        {t.symbol[0]}
+                      </div>
 
                       <span>{t.symbol}</span>
                     </div>
                   </td>
 
                   <td>{formatAmount(t.amount)}</td>
-
                   <td>{formatUSD(price)}</td>
-
                   <td>{formatUSD(t.value_usd)}</td>
 
                   <td>
@@ -184,25 +184,16 @@ export default function AssetsPage() {
       </div>
 
       {/* WALLET BREAKDOWN */}
+      <div className="card" style={{ marginTop: 24 }}>
 
-      <div className="card mt-30">
-
-        <h3 className="mb-20">Wallet Breakdown</h3>
+        <h3 style={{ marginBottom: 16 }}>Wallet Breakdown</h3>
 
         {data.wallets.map(w => (
-          <div key={w.id} style={{
-            padding: "12px 0",
-            borderBottom: "1px solid #1a1a1a"
-          }}>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between"
-            }}>
-              <div className="text-secondary">
-                {w.label || w.address.slice(0, 6)}
-              </div>
-              <div>{formatUSD(w.totalValue)}</div>
+          <div key={w.id} className="wallet-header">
+            <div className="text-secondary">
+              {w.label || w.address.slice(0, 6)}
             </div>
+            <div>{formatUSD(w.totalValue)}</div>
           </div>
         ))}
 
@@ -212,7 +203,7 @@ export default function AssetsPage() {
   )
 }
 
-/* ================= FORMAT ================= */
+/* FORMAT */
 
 function formatUSD(value) {
   return new Intl.NumberFormat("en-US", {
