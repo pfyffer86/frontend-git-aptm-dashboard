@@ -9,18 +9,14 @@ export default function RootLayout({ children }) {
 
         <div className="app">
 
-          {/* SIDEBAR */}
           <Sidebar />
 
-          {/* MAIN */}
           <div className="main">
-
             <Header />
 
             <div className="content">
               {children}
             </div>
-
           </div>
 
         </div>
