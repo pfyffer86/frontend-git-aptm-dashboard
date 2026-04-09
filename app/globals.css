@@ -95,15 +95,15 @@ h3 {
 
 /* ================= SIDEBAR ================= */
 
+/* ================= SIDEBAR ================= */
+
 /* LOGO */
 .logo {
   width: 100%;
-  margin-bottom: 30px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 26px;
+
   display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
 .logo svg {
@@ -118,12 +118,14 @@ h3 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-top: 22px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--text-secondary);
 }
 
 /* NAV LINKS */
 .sidebar a {
+  position: relative;
+
   display: flex;
   align-items: center;
   gap: 12px;
@@ -137,15 +139,16 @@ h3 {
   transition: all 0.15s ease;
 }
 
-/* ICON FIX */
+/* ICON */
 .sidebar a svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  opacity: 0.85;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
 }
 
-/* TEXT ALIGN */
+/* TEXT */
 .sidebar a span {
   display: flex;
   align-items: center;
@@ -153,12 +156,46 @@ h3 {
 
 /* HOVER */
 .sidebar a:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.05);
 }
 
-/* ACTIVE */
+.sidebar a:hover svg {
+  opacity: 1;
+}
+
+/* ================= ACTIVE STATE (KEY PART) ================= */
+
 .sidebar a.active {
-  background: rgba(255,255,255,0.08);
+  background: rgba(59,130,246,0.08);
+}
+
+/* LEFT ACCENT BAR */
+.sidebar a.active::before {
+  content: "";
+
+  position: absolute;
+  left: -12px;
+  top: 6px;
+  bottom: 6px;
+
+  width: 3px;
+  border-radius: 2px;
+
+  background: var(--accent);
+
+  box-shadow: 0 0 8px rgba(59,130,246,0.6);
+}
+
+/* ACTIVE ICON */
+.sidebar a.active svg {
+  opacity: 1;
+}
+
+/* ================= SPACING FIX ================= */
+
+/* first section tighter */
+.menu-section:first-of-type {
+  margin-top: 0;
 }
 
 /* ================= CARDS ================= */
