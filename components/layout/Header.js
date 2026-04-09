@@ -1,27 +1,36 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { IconRefresh, IconUser } from "@tabler/icons-react"
 
 export default function Header() {
 
+  const pathname = usePathname()
+
+  function getTitle() {
+    if (pathname.startsWith("/assets")) return "Assets"
+    if (pathname.startsWith("/wallets")) return "Wallets"
+    if (pathname.startsWith("/settings")) return "Settings"
+    if (pathname.startsWith("/rates")) return "Rates"
+    return "Dashboard"
+  }
+
   return (
     <div className="header">
 
-      {/* LEFT */}
       <div className="header-left">
-        <h2 className="header-title">Assets</h2>
+        <h2 className="header-title">{getTitle()}</h2>
       </div>
 
-      {/* RIGHT */}
       <div className="header-right">
 
-        <button className="button-primary header-btn">
+        <button className="button-primary header-refresh">
           <IconRefresh size={16} />
           Refresh
         </button>
 
         <div className="user-button">
-          <IconUser size={16} />
+          <IconUser size={18} />
         </div>
 
       </div>
