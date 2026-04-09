@@ -82,7 +82,6 @@ export default function AssetsPage() {
 
       <h1>Assets</h1>
 
-      {/* KPI */}
       <div className="kpi-grid">
 
         <div className="card">
@@ -97,7 +96,6 @@ export default function AssetsPage() {
 
       </div>
 
-      {/* TABLE */}
       <div className="card">
 
         <h3 style={{ marginBottom: 16 }}>Assets Breakdown</h3>
@@ -159,18 +157,15 @@ export default function AssetsPage() {
 
                   <td>
                     <div className="allocation">
-
                       <div className="allocation-bar">
                         <div
                           className="allocation-fill"
                           style={{ width: `${allocation}%` }}
                         />
                       </div>
-
                       <div className="allocation-text">
                         {allocation.toFixed(1)}%
                       </div>
-
                     </div>
                   </td>
 
@@ -183,7 +178,6 @@ export default function AssetsPage() {
 
       </div>
 
-      {/* WALLET BREAKDOWN */}
       <div className="card" style={{ marginTop: 24 }}>
 
         <h3 style={{ marginBottom: 16 }}>Wallet Breakdown</h3>
