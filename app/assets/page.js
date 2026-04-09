@@ -96,8 +96,6 @@ export default function AssetsPage() {
     <div className="kpi-sub">Tokens in portfolio</div>
   </div>
 
-</div>
-
       </div>
 
       <div className="card">
