@@ -196,13 +196,18 @@ h3 {
 /* ================= HEADER ================= */
 
 .header {
-  height: 64px;
-
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  height: 64px;
 
   padding: 0 24px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+/* pushes content right */
+.header-spacer {
+  flex: 1;
 }
 
 /* LEFT */
@@ -280,10 +285,10 @@ h3 {
 
 .user-dropdown {
   position: absolute;
-  top: 46px;
+  top: 48px;
   right: 0;
 
-  min-width: 200px;
+  min-width: 220px;
 
   background: var(--card);
   border: 1px solid var(--border);
@@ -291,7 +296,7 @@ h3 {
 
   padding: 12px;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
 
   z-index: 100;
 }
