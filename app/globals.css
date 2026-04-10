@@ -252,6 +252,93 @@ h3 {
   background: var(--card-hover);
 }
 
+.user-button.primary {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(59,130,246,0.15);
+  color: var(--accent);
+
+  border: 1px solid rgba(59,130,246,0.3);
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-button.primary:hover {
+  background: rgba(59,130,246,0.25);
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 46px;
+  right: 0;
+
+  min-width: 200px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  padding: 12px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+
+  z-index: 100;
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.user-email span {
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.dropdown-btn:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.dropdown-btn.logout {
+  background: rgba(239,68,68,0.15);
+  color: #ef4444;
+}
+
+.dropdown-btn.logout:hover {
+  background: rgba(239,68,68,0.25);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 /* ================= CARDS ================= */
 
 .card {
