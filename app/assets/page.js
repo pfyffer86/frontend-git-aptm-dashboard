@@ -136,7 +136,7 @@ export default function AssetsPage() {
                   <td>{formatAmount(t.amount)}</td>
 
                   {/* PRICE */}
-                  <td>{formatUSD(t.price)}</td>
+                  <td>{formatPrice(t.price)}</td>
 
                   {/* VALUE */}
                   <td>{formatUSD(t.value_usd)}</td>
@@ -204,4 +204,13 @@ function formatAmount(value) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 4
   }).format(value)
+}
+
+function formatPrice(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4
+  }).format(value || 0)
 }
