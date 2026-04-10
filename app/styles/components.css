@@ -1,0 +1,83 @@
+/* ================= CARD ================= */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(59,130,246,0.25);
+  box-shadow:
+    0 0 0 1px rgba(59,130,246,0.15),
+    0 8px 30px rgba(0,0,0,0.4),
+    0 0 20px rgba(59,130,246,0.15);
+}
+
+/* ================= BUTTON ================= */
+
+.button-primary {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+
+  background: var(--accent);
+  color: white;
+
+  font-size: 13px;
+}
+
+/* ================= TABLE ================= */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.table tr:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(59,130,246,0.06),
+    rgba(59,130,246,0.02)
+  );
+}
+
+/* ================= DROPDOWN ================= */
+
+.user-dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+
+  min-width: 220px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  padding: 12px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,255,255,0.02);
+
+  z-index: 100;
+}
