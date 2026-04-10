@@ -61,18 +61,6 @@ a {
   flex-direction: column;
 }
 
-/* HEADER */
-.header {
-  height: 64px;
-  border-bottom: 1px solid var(--border);
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  padding: 0 24px;
-}
-
 /* CONTENT */
 .content {
   flex: 1;
