@@ -725,6 +725,26 @@ h3 {
   background: rgba(59,130,246,0.12);
 }
 
+
+.add-wallet-card.full {
+  width: 100%;
+  min-height: 120px;
+
+  flex-direction: row;
+  justify-content: center;
+  gap: 14px;
+
+  font-weight: 500;
+}
+
+.add-wallet-card.full:hover {
+  background: rgba(59,130,246,0.12);
+}
+
+.add-wallet-card.full svg {
+  color: var(--accent);
+}
+
 /* ================= MODAL OVERLAY ================= */
 
 .modal-overlay {
