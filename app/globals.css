@@ -526,6 +526,51 @@ h3 {
   transform: rotate(180deg);
 }
 
+/* ===== WALLET TABLE HEADER ===== */
+
+.wallet-token-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  color: var(--text-secondary);
+
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== WALLET ROW POLISH ===== */
+
+.wallet-token-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  align-items: center;
+
+  padding: 10px 0;
+
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+
+  transition: background 0.2s ease;
+}
+
+.wallet-token-row:hover {
+  background: rgba(59,130,246,0.05);
+}
+
+/* spacing fix */
+.wallet-token-row:first-of-type {
+  margin-top: 4px;
+}
+
+.wallet-token-row div:nth-child(2),
+.wallet-token-row div:nth-child(3),
+.wallet-token-row div:nth-child(4) {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ================= BUTTON ================= */
 
 .button-primary {
