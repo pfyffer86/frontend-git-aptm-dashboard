@@ -1,5 +1,6 @@
 "use client"
 
+import "../styles/pages/assets.css"
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
