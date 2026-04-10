@@ -571,6 +571,40 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
+/* ===== TOKEN META (für zukünftige Namen) ===== */
+
+.token-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+/* ===== WALLET VALUE stärker hervorheben ===== */
+
+.wallet-value {
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+/* ===== BESSERE HOVER DEPTH ===== */
+
+.wallet-header.clickable:hover {
+  background: rgba(59,130,246,0.04);
+}
+
+/* ===== TABLE CONSISTENCY ===== */
+
+.wallet-token-header,
+.wallet-token-row {
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+}
+
+/* ===== SMOOTHER ACCORDION ===== */
+
+.wallet-body {
+  will-change: max-height, opacity, transform;
+}
+
 /* ================= BUTTON ================= */
 
 .button-primary {
