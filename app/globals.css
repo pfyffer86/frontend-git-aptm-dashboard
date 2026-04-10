@@ -202,7 +202,7 @@ h3 {
 
   padding: 0 24px;
 
-  border-bottom: 1px solid var(--border);
+  border-bottom: none; /* ← FIX */
 }
 
 /* pushes content right */
