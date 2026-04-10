@@ -370,6 +370,14 @@ h3 {
   padding-left: 4px;
 }
 
+.table tr {
+  transition: background 0.2s ease;
+}
+
+.table tr:hover {
+  background: rgba(255,255,255,0.03);
+}
+
 /* ================= TOKEN ================= */
 
 .token {
