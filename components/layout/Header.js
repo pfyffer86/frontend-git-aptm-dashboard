@@ -18,9 +18,14 @@ export default function Header() {
   return (
     <div className="header">
 
-      <div className="header-left">
-        <h2 className="header-title">{getTitle()}</h2>
-      </div>
+     <div className="header">
+     <div />
+
+  <div className="header-right">
+    ...
+  </div>
+
+</div>
 
       <div className="header-right">
 
