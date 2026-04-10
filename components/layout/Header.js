@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { supabase } from "../../lib/supabase"
 import { IconUser } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
@@ -11,6 +11,7 @@ export default function Header() {
   const [user, setUser] = useState(null)
 
   const router = useRouter()
+  const menuRef = useRef(null)
 
   // ===== LOAD USER =====
   useEffect(() => {
@@ -26,20 +27,49 @@ export default function Header() {
   async function logout() {
     await supabase.auth.signOut()
     setUser(null)
+    setOpen(false)
     router.push("/login")
   }
+
+  // ===== OUTSIDE CLICK =====
+  useEffect(() => {
+    function handleClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  // ===== ESC CLOSE =====
+  useEffect(() => {
+    function handleEsc(e) {
+      if (e.key === "Escape") {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener("keydown", handleEsc)
+    return () => document.removeEventListener("keydown", handleEsc)
+  }, [])
 
   return (
     <div className="header">
 
-      {/* RIGHT SIDE */}
+      <div className="header-spacer" />
+
       <div className="header-actions">
 
         <div
           className="user-menu"
-          onClick={() => setOpen(!open)}
+          ref={menuRef}
         >
-          <div className="user-button primary">
+          <div
+            className="user-button primary"
+            onClick={() => setOpen(prev => !prev)}
+          >
             <IconUser size={18} />
           </div>
 
@@ -63,7 +93,10 @@ export default function Header() {
               ) : (
                 <button
                   className="dropdown-btn"
-                  onClick={() => router.push("/login")}
+                  onClick={() => {
+                    setOpen(false)
+                    router.push("/login")
+                  }}
                 >
                   Login
                 </button>
