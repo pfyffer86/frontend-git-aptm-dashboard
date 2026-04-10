@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 
-/* ICON (NEU - sauber) */
+/* ICON */
 
 function getTokenIcon(cmc_id) {
   if (!cmc_id) return null
@@ -17,6 +17,9 @@ export default function AssetsPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // ✅ Accordion State
+  const [openWallet, setOpenWallet] = useState(null)
 
   async function load() {
     try {
@@ -111,12 +114,10 @@ export default function AssetsPage() {
               return (
                 <tr key={t.symbol}>
 
-                  {/* ASSET */}
                   <td>
                     <div className="token">
 
                       <div className="token-icon">
-
                         {icon ? (
                           <img src={icon} alt={t.symbol} />
                         ) : (
@@ -124,7 +125,6 @@ export default function AssetsPage() {
                             {t.symbol[0]}
                           </div>
                         )}
-
                       </div>
 
                       <span>{t.symbol}</span>
@@ -132,16 +132,10 @@ export default function AssetsPage() {
                     </div>
                   </td>
 
-                  {/* BALANCE */}
                   <td>{formatAmount(t.amount)}</td>
-
-                  {/* PRICE */}
                   <td>{formatPrice(t.price)}</td>
-
-                  {/* VALUE */}
                   <td>{formatUSD(t.value_usd)}</td>
 
-                  {/* ALLOCATION */}
                   <td>
                     <div className="allocation">
                       <div className="allocation-bar">
@@ -165,19 +159,83 @@ export default function AssetsPage() {
 
       </div>
 
-      {/* WALLET */}
+      {/* WALLET BREAKDOWN */}
       <div className="card mt-24">
 
         <h3 className="mb-16">Wallet Breakdown</h3>
 
-        {data.wallets.map(w => (
-          <div key={w.id} className="wallet-header">
-            <div className="text-secondary">
-              {w.label || w.address.slice(0, 6)}
+        {data.wallets.map((w, i) => {
+
+          const isOpen = openWallet === i
+
+          return (
+            <div key={w.id} className="wallet-card">
+
+              {/* HEADER */}
+              <div
+                className="wallet-header clickable"
+                onClick={() => setOpenWallet(isOpen ? null : i)}
+              >
+
+                <div>
+                  <div className="wallet-label">
+                    {w.label || "Wallet"}
+                  </div>
+
+                  <div className="wallet-address">
+                    {formatAddress(w.address)}
+                  </div>
+                </div>
+
+                <div className="wallet-value">
+                  {formatUSD(w.totalValue)}
+                </div>
+
+              </div>
+
+              {/* ACCORDION */}
+              {isOpen && (
+
+                <div className="wallet-body">
+
+                  {w.tokens?.map(t => {
+
+                    const icon = getTokenIcon(t.cmc_id)
+
+                    return (
+                      <div key={t.symbol} className="wallet-token-row">
+
+                        <div className="token">
+
+                          <div className="token-icon">
+                            {icon ? (
+                              <img src={icon} />
+                            ) : (
+                              <div className="token-fallback">
+                                {t.symbol[0]}
+                              </div>
+                            )}
+                          </div>
+
+                          <span>{t.symbol}</span>
+
+                        </div>
+
+                        <div>{formatAmount(t.amount)}</div>
+                        <div>{formatPrice(t.price)}</div>
+                        <div>{formatUSD(t.value_usd)}</div>
+
+                      </div>
+                    )
+                  })}
+
+                </div>
+
+              )}
+
             </div>
-            <div>{formatUSD(w.totalValue)}</div>
-          </div>
-        ))}
+          )
+        })}
 
       </div>
 
@@ -195,17 +253,6 @@ function formatUSD(value) {
   }).format(value || 0)
 }
 
-function formatAmount(value) {
-  if (!value) return "0"
-
-  if (value < 0.0001) return value.toFixed(8)   // ❗ keine scientific notation mehr
-  if (value < 1) return value.toFixed(6)
-
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 4
-  }).format(value)
-}
-
 function formatPrice(value) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -213,4 +260,19 @@ function formatPrice(value) {
     minimumFractionDigits: 4,
     maximumFractionDigits: 4
   }).format(value || 0)
+}
+
+function formatAmount(value) {
+  if (!value) return "0"
+
+  if (value < 0.0001) return value.toFixed(8)
+  if (value < 1) return value.toFixed(6)
+
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 4
+  }).format(value)
+}
+
+function formatAddress(addr) {
+  return addr.slice(0, 4) + "...." + addr.slice(-4)
 }
