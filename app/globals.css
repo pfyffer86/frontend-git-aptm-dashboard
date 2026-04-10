@@ -736,7 +736,7 @@ h3 {
 
   font-weight: 500;
 
-  margin-bottom: 24px; /* ← FIX */
+  margin-bottom: 32px;
 }
 
 .add-wallet-card.full:hover {
