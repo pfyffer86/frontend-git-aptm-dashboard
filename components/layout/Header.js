@@ -21,10 +21,6 @@ export default function Header() {
      <div className="header">
      <div />
 
-  <div className="header-right">
-    ...
-  </div>
-
 </div>
 
       <div className="header-right">
