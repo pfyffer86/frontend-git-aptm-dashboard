@@ -173,33 +173,42 @@ export default function AssetsPage() {
               </div>
 
               {/* ANIMATED BODY */}
-              <div className={`wallet-body ${isOpen ? "open" : ""}`}>
+             <div className={`wallet-body ${isOpen ? "open" : ""}`}>
 
-                {w.tokens?.map(t => {
+  {/* HEADER */}
+  <div className="wallet-token-header">
+    <div>Asset</div>
+    <div>Balance</div>
+    <div>Price</div>
+    <div>Value</div>
+  </div>
 
-                  const icon = getTokenIcon(t.cmc_id)
+  {/* ROWS */}
+  {w.tokens?.map(t => {
 
-                  return (
-                    <div key={t.symbol} className="wallet-token-row">
+    const icon = getTokenIcon(t.cmc_id)
 
-                      <div className="token">
-                        <div className="token-icon">
-                          {icon
-                            ? <img src={icon} />
-                            : <div className="token-fallback">{t.symbol[0]}</div>}
-                        </div>
-                        <span>{t.symbol}</span>
-                      </div>
+    return (
+      <div key={t.symbol} className="wallet-token-row">
 
-                      <div>{formatAmount(t.amount)}</div>
-                      <div>{formatPrice(t.price)}</div>
-                      <div>{formatUSD(t.value_usd)}</div>
+        <div className="token">
+          <div className="token-icon">
+            {icon
+              ? <img src={icon} />
+              : <div className="token-fallback">{t.symbol[0]}</div>}
+          </div>
+          <span>{t.symbol}</span>
+        </div>
 
-                    </div>
-                  )
-                })}
+        <div>{formatAmount(t.amount)}</div>
+        <div>{formatPrice(t.price)}</div>
+        <div>{formatUSD(t.value_usd)}</div>
 
-              </div>
+      </div>
+    )
+  })}
+
+</div>
 
             </div>
           )
