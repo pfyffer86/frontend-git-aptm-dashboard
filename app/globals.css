@@ -340,17 +340,34 @@ h3 {
   border-collapse: collapse;
 }
 
+/* HEADER */
 .table th {
   text-align: left;
-  font-size: 12px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+
   color: var(--text-secondary);
-  padding: 12px 0;
+
+  padding: 14px 0;
   border-bottom: 1px solid var(--border);
 }
 
+/* ROWS */
 .table td {
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: middle;
+}
+
+/* ROW HOVER (sehr subtil) */
+.table tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* SPACING FIX: erste Spalte */
+.table td:first-child {
+  padding-left: 4px;
 }
 
 /* ================= TOKEN ================= */
@@ -358,33 +375,53 @@ h3 {
 .token {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-weight: 500;
 }
 
+/* ICON CONTAINER */
 .token-icon {
-  position: relative;
   width: 22px;
   height: 22px;
+  flex-shrink: 0;
 }
 
+/* IMAGE */
 .token img {
-  width: 20px;
-  height: 20px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
 }
 
+/* FALLBACK */
 .token-fallback {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: #2b3542;
+
+  background: #2a3442;
+  color: #cbd5e1;
 
   display: none;
   align-items: center;
   justify-content: center;
 
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
+}
+
+/* ================= NUMBERS ================= */
+
+/* bessere Lesbarkeit Zahlen */
+.table td:nth-child(2),
+.table td:nth-child(3),
+.table td:nth-child(4) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* VALUE hervorheben */
+.table td:nth-child(4) {
+  font-weight: 500;
 }
 
 /* ================= ALLOCATION ================= */
@@ -395,20 +432,28 @@ h3 {
   gap: 6px;
 }
 
+/* BAR */
 .allocation-bar {
   width: 160px;
   height: 8px;
+
   background: #1a2330;
-  border-radius: 6px;
+  border-radius: 999px;
+
   overflow: hidden;
 }
 
+/* FILL */
 .allocation-fill {
   height: 100%;
+  border-radius: 999px;
+
   background: var(--gradient-allocation);
-  border-radius: 6px;
+
+  transition: width 0.4s ease;
 }
 
+/* TEXT */
 .allocation-text {
   font-size: 11px;
   color: var(--text-secondary);
