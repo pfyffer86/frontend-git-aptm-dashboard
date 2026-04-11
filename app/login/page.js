@@ -27,37 +27,40 @@ export default function LoginPage() {
       return
     }
 
-    // ❌ KEIN localStorage mehr
-
-    // ✅ Redirect
     router.push("/dashboard")
   }
 
   return (
-    <div style={{ padding: 40 }}>
+    <div className="login-page">
 
-      <h1>Login</h1>
+      <div className="card login-card">
 
-      <div style={{ marginTop: 20 }}>
+        <h1 className="login-title">Login</h1>
 
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          style={{ display: "block", marginBottom: 10 }}
-        />
+        <div className="login-form">
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          style={{ display: "block", marginBottom: 10 }}
-        />
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
 
-        <button onClick={handleLogin} disabled={loading}>
-          {loading ? "Loading..." : "Login"}
-        </button>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+
+          <button
+            className="button-primary login-button"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Login"}
+          </button>
+
+        </div>
 
       </div>
 
