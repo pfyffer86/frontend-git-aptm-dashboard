@@ -137,18 +137,17 @@ export default function WalletsPage() {
 
       <h1>My Wallets</h1>
 
-      {/* GRID */}
-     {/* ADD CARD (SEPARATE ROW) */}
-<div className="mb-24">
-  <div className="card add-wallet-card full" onClick={openAdd}>
-    <IconPlus size={36} />
-    <div>Add Wallet</div>
-  </div>
-</div>
+      {/* ADD CARD */}
+      <div className="mb-24">
+        <div className="card add-wallet-card full" onClick={openAdd}>
+          <IconPlus size={36} />
+          <div>Add Wallet</div>
+        </div>
+      </div>
 
-{/* WALLET GRID */}
-<div className="wallet-grid">
-  {wallets.map(w => (
+      {/* WALLET GRID */}
+      <div className="wallet-grid">
+        {wallets.map(w => (
           <div key={w.id} className="card wallet-card">
 
             <div className="wallet-row">
@@ -191,15 +190,14 @@ export default function WalletsPage() {
 
           </div>
         ))}
-
       </div>
 
       {/* MODAL */}
       {modal && (
         <div className="modal-overlay">
-
           <div className="modal">
 
+            {/* ADD / EDIT */}
             {modal !== "delete" && (
               <>
                 <h3>{modal === "add" ? "Add Wallet" : "Edit Wallet"}</h3>
@@ -216,26 +214,27 @@ export default function WalletsPage() {
                   onChange={e => setForm({ ...form, address: e.target.value })}
                 />
 
-            <div className="modal-actions">
+                <div className="modal-actions">
 
-                <button
-                className="button-secondary"
-                onClick={() => setModal(null)}
-                >
-                Cancel
-                </button>
+                  <button
+                    className="button-secondary"
+                    onClick={() => setModal(null)}
+                  >
+                    Cancel
+                  </button>
 
-                <button
-                className="button-danger"
-                onClick={() => deleteWallet(modal.id)}
-                >
-                Delete
-                </button>
+                  <button
+                    className="button-primary"
+                    onClick={modal === "add" ? handleAdd : handleEdit}
+                  >
+                    Save
+                  </button>
 
-            </div>
+                </div>
               </>
             )}
 
+            {/* DELETE */}
             {modal === "delete" && (
               <>
                 <h3>Delete Wallet</h3>
@@ -245,7 +244,13 @@ export default function WalletsPage() {
                 </p>
 
                 <div className="modal-actions">
-                  <button onClick={() => setModal(null)}>Cancel</button>
+
+                  <button
+                    className="button-secondary"
+                    onClick={() => setModal(null)}
+                  >
+                    Cancel
+                  </button>
 
                   <button
                     className="button-danger"
@@ -253,12 +258,12 @@ export default function WalletsPage() {
                   >
                     Delete
                   </button>
+
                 </div>
               </>
             )}
 
           </div>
-
         </div>
       )}
 
