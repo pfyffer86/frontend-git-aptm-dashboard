@@ -14,6 +14,18 @@
   --gradient-allocation: linear-gradient(90deg, #22c55e, #4ade80);
 }
 
+/* ===== BRAND SYSTEM ===== */
+
+--blue: #3b82f6;
+--blue-hover: #2563eb;
+--blue-soft: rgba(59,130,246,0.10);
+
+--gold: #d4af37;
+--gold-soft: rgba(212,175,55,0.10);
+--gold-border: rgba(212,175,55,0.25);
+
+--green: #22c55e;
+
 /* ================= RESET ================= */
 
 * {
@@ -161,7 +173,7 @@ h3 {
 /* ================= ACTIVE STATE (KEY PART) ================= */
 
 .sidebar a.active {
-  background: rgba(59,130,246,0.08);
+  background: var(--blue-soft);
 }
 
 /* LEFT ACCENT BAR */
@@ -175,8 +187,7 @@ h3 {
 
   width: 3px;
   border-radius: 2px;
-
-  background: var(--accent);
+  background: var(--blue);
 
   box-shadow: 0 0 8px rgba(59,130,246,0.6);
 }
@@ -251,10 +262,9 @@ h3 {
   justify-content: center;
 
   /* 🔥 GOLD */
-  color: #d4af37;
-
-  background: rgba(212,175,55,0.12);
-  border: 1px solid rgba(212,175,55,0.25);
+  color: var(--gold);
+  background: var(--gold-soft);
+  border: 1px solid var(--gold-border);
 
   cursor: pointer;
   transition: all 0.2s ease;
@@ -437,7 +447,7 @@ h3 {
 /* ICON STYLE (GLOBAL LOOK) */
 
 .kpi-icon {
-  color: var(--accent);
+  color: var(--blue);
   opacity: 0.9;
 }
 
@@ -487,11 +497,9 @@ h3 {
 .table tr:hover {
   background: linear-gradient(
     90deg,
-    rgba(212,175,55,0.12),
+    rgba(212,175,55,0.08),
     rgba(212,175,55,0.02)
   );
-
-  box-shadow: inset 0 0 0 1px rgba(212,175,55,0.15);
 }
 
 /* SPACING FIX: erste Spalte */
