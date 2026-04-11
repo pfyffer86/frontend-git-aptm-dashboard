@@ -789,6 +789,11 @@ h3 {
   opacity: 0.9;
 }
 
+.button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .button-secondary {
   padding: 10px 16px;
   border-radius: 10px;
@@ -1115,4 +1120,21 @@ LOGIN PAGE
 .login-button {
   margin-top: 8px;
   width: 100%;
+}
+
+.login-error {
+  font-size: 12px;
+  color: #ef4444;
+
+  margin-top: -4px;
+}
+
+.login-logo {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+
+  color: var(--text-secondary);
+
+  margin-bottom: 12px;
 }
