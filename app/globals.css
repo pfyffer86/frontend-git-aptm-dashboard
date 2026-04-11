@@ -290,30 +290,6 @@ h3 {
   position: relative;
 }
 
-.user-button {
-  width: 36px;
-  height: 36px;
-
-  border-radius: 10px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(59,130,246,0.12);
-  color: #3b82f6;
-
-  border: 1px solid rgba(59,130,246,0.25);
-
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.user-button:hover {
-  background: rgba(59,130,246,0.18);
-  transform: translateY(-1px);
-}
-
 /* USER INFO */
 .user-info {
   font-size: 12px;
