@@ -1,13 +1,7 @@
-/* ================= WALLETS PAGE ================= */
-
 .wallet-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-}
-
-.wallet-card {
-  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
 .wallet-row {
@@ -51,7 +45,6 @@
 
 .action-icon {
   cursor: pointer;
-  color: white;
   opacity: 0.7;
 }
 
@@ -64,77 +57,22 @@
 }
 
 /* ADD CARD */
-.add-wallet-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 10px;
-
-  cursor: pointer;
-
-  color: var(--accent);
-
-  min-height: 120px;
-
-  background: rgba(59,130,246,0.06);
-  border: 1px dashed rgba(59,130,246,0.3);
-}
 
 .add-wallet-card.full {
   width: 100%;
   min-height: 120px;
 
-  flex-direction: row;
-  justify-content: center;
-  gap: 14px;
-
-  font-weight: 500;
-
-  margin-bottom: 32px;
-}
-
-/* MODAL */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-
   display: flex;
   align-items: center;
   justify-content: center;
-}
+  gap: 14px;
 
-.modal {
-  background: var(--card);
-  padding: 24px;
+  margin-bottom: 32px;
+
+  background: rgba(59,130,246,0.06);
+  border: 1px dashed rgba(59,130,246,0.3);
   border-radius: 12px;
-  width: 360px;
-}
 
-.modal input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 12px;
-
-  background: #0f172a;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: white;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.button-danger {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+  cursor: pointer;
+  color: var(--accent);
 }
