@@ -952,11 +952,15 @@ h3 {
 }
 
 .button-danger {
-  background: #ef4444;
+  bbackground: #ef4444;
   color: white;
   border: none;
   padding: 8px 14px;
   border-radius: 8px;
+}
+
+.button-danger:hover {
+  background: #dc2626;
 }
 
 /* =====================================================
