@@ -1,4 +1,17 @@
 :root {
+
+  /* ===== BRAND SYSTEM ===== */
+
+--blue: #3b82f6;
+--blue-hover: #2563eb;
+--blue-soft: rgba(59,130,246,0.10);
+
+--gold: #d4af37;
+--gold-soft: rgba(212,175,55,0.10);
+--gold-border: rgba(212,175,55,0.25);
+
+--green: #22c55e;
+  
   --bg: #0c1117;
   --card: #151b23;
   --card-hover: #1b2430;
@@ -13,18 +26,6 @@
 
   --gradient-allocation: linear-gradient(90deg, #22c55e, #4ade80);
 }
-
-/* ===== BRAND SYSTEM ===== */
-
---blue: #3b82f6;
---blue-hover: #2563eb;
---blue-soft: rgba(59,130,246,0.10);
-
---gold: #d4af37;
---gold-soft: rgba(212,175,55,0.10);
---gold-border: rgba(212,175,55,0.25);
-
---green: #22c55e;
 
 /* ================= RESET ================= */
 
