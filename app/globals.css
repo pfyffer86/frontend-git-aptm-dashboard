@@ -475,8 +475,8 @@ h3 {
 .table tr:hover {
   background: linear-gradient(
     90deg,
-    rgba(212,175,55,0.08),
-    rgba(212,175,55,0.02)
+    rgba(59,130,246,0.10),
+    rgba(59,130,246,0.03)
   );
 }
 
@@ -707,8 +707,8 @@ h3 {
 .wallet-token-row:hover {
   background: linear-gradient(
     90deg,
-    rgba(212,175,55,0.08),
-    rgba(212,175,55,0.02)
+    rgba(59,130,246,0.10),
+    rgba(59,130,246,0.03)
   );
 }
 
@@ -741,7 +741,7 @@ h3 {
 /* ===== BESSERE HOVER DEPTH ===== */
 
 .wallet-header.clickable:hover {
-  background: rgba(59,130,246,0.04);
+  background: rgba(59,130,246,0.06);
 }
 
 /* ===== TABLE CONSISTENCY ===== */
