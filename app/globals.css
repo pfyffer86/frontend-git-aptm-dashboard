@@ -790,18 +790,21 @@ h3 {
 }
 
 .button-secondary {
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
 
   background: transparent;
   border: 1px solid var(--border);
 
   color: var(--text-primary);
+  font-size: 13px;
+
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .button-secondary:hover {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.05);
 }
 
 /* ================= USER ================= */
@@ -951,12 +954,24 @@ h3 {
   margin-top: 20px;
 }
 
+.modal-actions button {
+  min-width: 90px; /* gleiche Breite */
+}
+
 .button-danger {
-  bbackground: #ef4444;
-  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+
+  background: #ef4444;
   border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(239,68,68,0.25);
+
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .button-danger:hover {
