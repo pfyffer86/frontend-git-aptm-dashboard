@@ -487,9 +487,11 @@ h3 {
 .table tr:hover {
   background: linear-gradient(
     90deg,
-    rgba(212,175,55,0.10),
-    rgba(212,175,55,0.03)
+    rgba(212,175,55,0.12),
+    rgba(212,175,55,0.02)
   );
+
+  box-shadow: inset 0 0 0 1px rgba(212,175,55,0.15);
 }
 
 /* SPACING FIX: erste Spalte */
@@ -717,7 +719,13 @@ h3 {
 }
 
 .wallet-token-row:hover {
-  background: rgba(59,130,246,0.05);
+  background: linear-gradient(
+    90deg,
+    rgba(212,175,55,0.12),
+    rgba(212,175,55,0.02)
+  );
+
+  box-shadow: inset 0 0 0 1px rgba(212,175,55,0.15);
 }
 
 /* spacing fix */
