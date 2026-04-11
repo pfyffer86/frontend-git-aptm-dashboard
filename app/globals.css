@@ -487,8 +487,8 @@ h3 {
 .table tr:hover {
   background: linear-gradient(
     90deg,
-    rgba(59,130,246,0.06),
-    rgba(59,130,246,0.02)
+    rgba(212,175,55,0.10),
+    rgba(212,175,55,0.03)
   );
 }
 
