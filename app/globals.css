@@ -1138,3 +1138,27 @@ LOGIN PAGE
 
   margin-bottom: 12px;
 }
+
+/* ================= NFT HEX ================= */
+
+.nft-hex {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--blue-soft);
+  color: var(--blue);
+
+  clip-path: polygon(
+    25% 0%, 75% 0%,
+    100% 50%,
+    75% 100%, 25% 100%,
+    0% 50%
+  );
+
+  font-size: 14px;
+  font-weight: 600;
+}
