@@ -92,7 +92,7 @@ export default function StakingPage() {
       <div className="card">
 
         <div className="card-header">
-          <h3>Staking Breakdown</h3>
+          <h3 className="mb-16">Staking Breakdown</h3>
         </div>
 
         <table className="table">
