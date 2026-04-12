@@ -983,6 +983,42 @@ h3 {
   background: #dc2626;
 }
 
+/* ================= SELECT (DROPDOWN) ================= */
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  padding: 10px 12px;
+  font-size: 14px;
+
+  outline: none;
+  cursor: pointer;
+}
+
+/* Hover */
+select:hover {
+  border-color: var(--blue);
+}
+
+/* Focus */
+select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+/* Optional: spacing wenn mehrere nebeneinander */
+.modal select {
+  margin-right: 8px;
+}
+
 /* =====================================================
 HEADER USER UX FIX (MINIMAL SAFE PATCH)
 ===================================================== */
