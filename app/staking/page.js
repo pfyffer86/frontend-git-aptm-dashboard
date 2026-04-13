@@ -219,15 +219,17 @@ function formatNumber(v) {
   if (!v || isNaN(v)) return "0"
 
   return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 4
   }).format(v)
 }
 
 function formatUSD(v) {
-  if (!v || isNaN(v)) return "0"
+  if (!v || isNaN(v)) return "0.00"
 
   return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   }).format(v)
 }
 
