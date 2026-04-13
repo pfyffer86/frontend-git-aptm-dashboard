@@ -443,9 +443,9 @@ h3 {
 
 /* optional subtext */
 .kpi-sub {
-  font-size: 12px;
+  font-size: 10px;
   text-transform: uppercase;       /* 🔥 uppercase */
-  font-weight: 400;                /* 🔥 normal */
+  font-weight: 600;                /* 🔥 normal */
   color: var(--text-secondary);    /* behalten */
   letter-spacing: 0.04em;
   margin-top: 8px;
