@@ -7,27 +7,40 @@ import { IconPigMoney, IconStack2, IconHexagonLetterS } from "@tabler/icons-reac
 export default function StakingPage() {
 
   const [data, setData] = useState([])
+  const [price, setPrice] = useState(0)
   const [loading, setLoading] = useState(true)
-
-  // 🔥 temporär fix (später aus API holen)
-  const APTM_PRICE = 0.27
 
   async function load() {
 
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) {
+      setLoading(false)
+      return
+    }
 
-    const res = await fetch(
-      "https://apertum-dashboard-production.up.railway.app/api/staking",
-      {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
+    try {
+
+      const res = await fetch(
+        "https://apertum-dashboard-production.up.railway.app/api/staking",
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
         }
-      }
-    )
+      )
 
-    const json = await res.json()
-    setData(Array.isArray(json) ? json : [])
+      const json = await res.json()
+
+      setData(Array.isArray(json.positions) ? json.positions : [])
+      setPrice(json.aptm_price || 0)
+
+    } catch (err) {
+
+      console.error("STAKING FETCH ERROR:", err)
+      setData([])
+      setPrice(0)
+    }
+
     setLoading(false)
   }
 
@@ -40,7 +53,7 @@ export default function StakingPage() {
   /* ================= KPI ================= */
 
   const totalAPT = data.reduce((sum, n) => sum + (n.stake || 0), 0)
-  const totalUSD = totalAPT * APTM_PRICE
+  const totalUSD = totalAPT * price
 
   return (
     <div>
@@ -142,7 +155,10 @@ export default function StakingPage() {
 
                   {/* UTILIZATION */}
                   <td>
-                    <ProgressBar value={utilization} color={getUtilColor(utilization)} />
+                    <ProgressBar
+                      value={utilization}
+                      color={getUtilColor(utilization)}
+                    />
                   </td>
 
                   {/* DURATION */}
@@ -150,7 +166,10 @@ export default function StakingPage() {
 
                   {/* TIME PROGRESS */}
                   <td>
-                    <ProgressBar value={n.progress} color="var(--blue)" />
+                    <ProgressBar
+                      value={n.progress}
+                      color="var(--blue)"
+                    />
                   </td>
 
                 </tr>
@@ -171,6 +190,8 @@ export default function StakingPage() {
 
 function ProgressBar({ value, color }) {
 
+  const percent = Math.max(0, Math.min(100, value * 100))
+
   return (
     <div className="allocation">
 
@@ -178,14 +199,14 @@ function ProgressBar({ value, color }) {
         <div
           className="allocation-fill"
           style={{
-            width: `${(value * 100).toFixed(1)}%`,
+            width: `${percent}%`,
             background: color
           }}
         />
       </div>
 
       <div className="allocation-text">
-        {(value * 100).toFixed(1)}%
+        {percent.toFixed(1)}%
       </div>
 
     </div>
@@ -195,7 +216,7 @@ function ProgressBar({ value, color }) {
 /* ================= HELPERS ================= */
 
 function formatNumber(v) {
-  if (!v) return "0"
+  if (!v || isNaN(v)) return "0"
 
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2
@@ -203,7 +224,7 @@ function formatNumber(v) {
 }
 
 function formatUSD(v) {
-  if (!v) return "0"
+  if (!v || isNaN(v)) return "0"
 
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 0
