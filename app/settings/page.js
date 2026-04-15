@@ -5,57 +5,55 @@ import { supabase } from "../../lib/supabase"
 
 import {
   IconPlus,
-  IconStack2,
-  IconRobot,
-  IconShovel,
-  IconPencil,
-  IconTrash,
+  IconWallet,
   IconHexagonLetterS,
-  IconHexagonLetterT,
-  IconHexagonLetterM
+  IconRobot,
+  IconPencil,
+  IconTrash
 } from "@tabler/icons-react"
 
-export default function NFTsPage() {
+export default function SettingsPage() {
 
-  const [nfts, setNfts] = useState([])
+  const [wallets, setWallets] = useState([])
+  const [staking, setStaking] = useState([])
+  const [tradebots, setTradebots] = useState([])
+
   const [loading, setLoading] = useState(true)
 
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
+  const [context, setContext] = useState(null)
 
-  const [form, setForm] = useState({
-    token_id: "",
-    tier: 1,
-    lock_years: 1
-  })
+  const [form, setForm] = useState({})
 
   /* ================= LOAD ================= */
 
-  async function loadNFTs() {
+  async function loadData() {
 
     try {
 
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token
 
-      const res = await fetch(
-        "https://apertum-dashboard-production.up.railway.app/api/nfts",
-        {
-          headers: {
-            Authorization: "Bearer " + token
-          }
-        }
-      )
+      const headers = {
+        Authorization: "Bearer " + token
+      }
 
-      if (!res.ok) throw new Error("API error")
+      const [wRes, sRes] = await Promise.all([
+        fetch("https://apertum-dashboard-production.up.railway.app/api/wallets", { headers }),
+        fetch("https://apertum-dashboard-production.up.railway.app/api/nft-staking", { headers })
+      ])
 
-      const json = await res.json()
-      setNfts(json || [])
+      const walletsData = await wRes.json()
+      const stakingData = await sRes.json()
+
+      setWallets(walletsData || [])
+      setStaking(stakingData || [])
+      setTradebots([])
 
     } catch (err) {
 
       console.error(err)
-      setNfts([])
 
     } finally {
       setLoading(false)
@@ -63,57 +61,79 @@ export default function NFTsPage() {
   }
 
   useEffect(() => {
-    loadNFTs()
+    loadData()
   }, [])
-
-  /* ================= HELPERS ================= */
-
-  function getIcon(type) {
-    if (type === "membership") return <IconHexagonLetterS size={18} />
-    if (type === "tradebot") return <IconHexagonLetterT size={18} />
-    if (type === "minebot") return <IconHexagonLetterM size={18} />
-    return null
-  }
-
-  function getLabel(type) {
-    if (type === "membership") return "Staking"
-    if (type === "tradebot") return "TradeBot"
-    if (type === "minebot") return "MineBot"
-    return "-"
-  }
-
-  const memberships = nfts.filter(n => n.type === "membership")
 
   /* ================= ACTIONS ================= */
 
-  function openAdd() {
-    setForm({ token_id: "", tier: 1, lock_years: 1 })
+  function openAdd(type) {
+
+    setContext(type)
+    setSelected(null)
+
+    if (type === "wallet") {
+      setForm({ label: "", address: "" })
+    }
+
+    if (type === "staking") {
+      setForm({ token_id: "", tier: 1, lock_years: 1, label: "" })
+    }
+
     setModal("add")
   }
 
-  function openEdit(n) {
-    setSelected(n)
-    setForm({
-      token_id: n.token_id,
-      tier: n.tier,
-      lock_years: n.lock_years
-    })
+  function openEdit(type, data) {
+
+    setContext(type)
+    setSelected(data)
+
+    if (type === "wallet") {
+      setForm({
+        label: data.label || "",
+        address: data.address
+      })
+    }
+
+    if (type === "staking") {
+      setForm({
+        token_id: data.token_id,
+        tier: data.tier,
+        lock_years: data.lock_years,
+        label: data.label || ""
+      })
+    }
+
     setModal("edit")
   }
 
-  function openDelete(n) {
-    setSelected(n)
+  function openDelete(type, data) {
+    setContext(type)
+    setSelected(data)
     setModal("delete")
   }
 
+  /* ================= SAVE ================= */
+
   async function handleAdd() {
 
-    const { data: sessionData } = await supabase.auth.getSession()
-    const token = sessionData?.session?.access_token
+    const { data } = await supabase.auth.getSession()
+    const token = data.session.access_token
 
-    await fetch(
-      "https://apertum-dashboard-production.up.railway.app/api/nfts",
-      {
+    if (context === "wallet") {
+
+      await fetch("/api/wallets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(form)
+      })
+    }
+
+    if (context === "staking") {
+
+      await fetch("/api/nft-staking", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,24 +142,35 @@ export default function NFTsPage() {
         body: JSON.stringify({
           ...form,
           tier: Number(form.tier),
-          lock_years: Number(form.lock_years),
-          type: "membership"
+          lock_years: Number(form.lock_years)
         })
-      }
-    )
+      })
+    }
 
     setModal(null)
-    loadNFTs()
+    loadData()
   }
 
   async function handleEdit() {
 
-    const { data: sessionData } = await supabase.auth.getSession()
-    const token = sessionData?.session?.access_token
+    const { data } = await supabase.auth.getSession()
+    const token = data.session.access_token
 
-    await fetch(
-      `https://apertum-dashboard-production.up.railway.app/api/nfts/${selected.id}`,
-      {
+    if (context === "wallet") {
+
+      await fetch(`/api/wallets/${selected.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(form)
+      })
+    }
+
+    if (context === "staking") {
+
+      await fetch(`/api/nft-staking/${selected.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -147,32 +178,37 @@ export default function NFTsPage() {
         },
         body: JSON.stringify({
           tier: Number(form.tier),
-          lock_years: Number(form.lock_years)
+          lock_years: Number(form.lock_years),
+          label: form.label
         })
-      }
-    )
+      })
+    }
 
     setModal(null)
-    loadNFTs()
+    loadData()
   }
 
   async function handleDelete() {
 
-    const { data: sessionData } = await supabase.auth.getSession()
-    const token = sessionData?.session?.access_token
+    const { data } = await supabase.auth.getSession()
+    const token = data.session.access_token
 
-    await fetch(
-      `https://apertum-dashboard-production.up.railway.app/api/nfts/${selected.id}`,
-      {
+    if (context === "wallet") {
+      await fetch(`/api/wallets/${selected.id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: "Bearer " + token
-        }
-      }
-    )
+        headers: { Authorization: "Bearer " + token }
+      })
+    }
+
+    if (context === "staking") {
+      await fetch(`/api/nft-staking/${selected.id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      })
+    }
 
     setModal(null)
-    loadNFTs()
+    loadData()
   }
 
   if (loading) return <div>Loading...</div>
@@ -180,39 +216,61 @@ export default function NFTsPage() {
   return (
     <div>
 
-      <h1>My NFTs</h1>
+      <h1>Settings</h1>
 
-      {/* ADD NFT */}
-      <div className="wallet-grid mb-32">
+      {/* ================= WALLET TABLE ================= */}
+      <div className="card mb-24">
+        <h3 className="mb-16">Wallets</h3>
 
-        <div className="card add-wallet-card" onClick={openAdd}>
-          <IconPlus size={26} />
-          <IconStack2 size={20} />
-          <div>Add Staking NFT</div>
-        </div>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>Label</th>
+              <th>Address</th>
+              <th>Settings</th>
+            </tr>
+          </thead>
 
-        <div className="card add-wallet-card disabled">
-          <IconPlus size={26} />
-          <IconRobot size={20} />
-          <div>Add TradeBot NFT</div>
-        </div>
+          <tbody>
+            {wallets.map(w => (
+              <tr key={w.id}>
 
-        <div className="card add-wallet-card disabled">
-          <IconPlus size={26} />
-          <IconShovel size={20} />
-          <div>Add MineBot NFT</div>
-        </div>
+                <td>
+                  <div className="asset-icon">
+                    <IconWallet size={16} />
+                  </div>
+                </td>
 
+                <td>{w.label || "-"}</td>
+                <td>{formatAddress(w.address)}</td>
+
+                <td>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <IconPencil className="action-icon" onClick={() => openEdit("wallet", w)} />
+                    <IconTrash className="action-icon delete" onClick={() => openDelete("wallet", w)} />
+                  </div>
+                </td>
+
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <button className="button-primary mt-16" onClick={() => openAdd("wallet")}>
+          <IconPlus size={16} /> Add Wallet
+        </button>
       </div>
 
-      {/* TABLE */}
-      <div className="card">
-        <h3 className="mb-16">NFT Overview</h3>
+      {/* ================= STAKING TABLE ================= */}
+      <div className="card mb-24">
+        <h3 className="mb-16">Staking Memberships</h3>
 
         <table className="table">
           <thead>
             <tr>
               <th>NFT</th>
+              <th>Label</th>
               <th>Token ID</th>
               <th>Tier</th>
               <th>Lock</th>
@@ -221,32 +279,24 @@ export default function NFTsPage() {
           </thead>
 
           <tbody>
-            {memberships.map(n => (
+            {staking.map(n => (
               <tr key={n.id}>
 
-                <td style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  {getIcon(n.type)}
-                  {getLabel(n.type)}
+                <td>
+                  <div className="asset-icon">
+                    <IconHexagonLetterS size={16} />
+                  </div>
                 </td>
 
+                <td>{n.label}</td>
                 <td>#{n.token_id}</td>
-
                 <td>Tier {n.tier}</td>
-
                 <td>{n.lock_years} Years</td>
 
                 <td>
                   <div style={{ display: "flex", gap: 10 }}>
-                    <IconPencil
-                      size={18}
-                      className="action-icon"
-                      onClick={() => openEdit(n)}
-                    />
-                    <IconTrash
-                      size={18}
-                      className="action-icon delete"
-                      onClick={() => openDelete(n)}
-                    />
+                    <IconPencil className="action-icon" onClick={() => openEdit("staking", n)} />
+                    <IconTrash className="action-icon delete" onClick={() => openDelete("staking", n)} />
                   </div>
                 </td>
 
@@ -254,55 +304,81 @@ export default function NFTsPage() {
             ))}
           </tbody>
         </table>
+
+        <button className="button-primary mt-16" onClick={() => openAdd("staking")}>
+          <IconPlus size={16} /> Add Staking NFT
+        </button>
       </div>
 
-      {/* MODAL bleibt unverändert */}
+      {/* ================= TRADEBOT TABLE ================= */}
+      <div className="card">
+        <h3 className="mb-16">Tradebots</h3>
+
+        <table className="table">
+          <thead>
+            <tr>
+              <th>NFT</th>
+              <th>Label</th>
+              <th>Token ID</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td colSpan="3" style={{ opacity: 0.6 }}>
+                No tradebots yet
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* ================= MODAL ================= */}
       {modal && (
         <div className="modal-overlay">
           <div className="modal">
 
             {modal !== "delete" && (
               <>
-                <h3>{modal === "add" ? "Add NFT" : "Edit NFT"}</h3>
+                <h3>{modal === "add" ? "Add" : "Edit"}</h3>
 
-                <input
-                  placeholder="Token ID"
-                  value={form.token_id}
-                  onChange={e => setForm({ ...form, token_id: e.target.value })}
-                  disabled={modal === "edit"}
-                />
+                {context === "wallet" && (
+                  <>
+                    <input
+                      placeholder="Label"
+                      value={form.label}
+                      onChange={e => setForm({ ...form, label: e.target.value })}
+                    />
+                    <input
+                      placeholder="Address"
+                      value={form.address}
+                      onChange={e => setForm({ ...form, address: e.target.value })}
+                    />
+                  </>
+                )}
 
-                <select
-                  value={String(form.tier)}
-                  onChange={e => setForm({ ...form, tier: Number(e.target.value) })}
-                >
-                  {[...Array(10)].map((_, i) => (
-                    <option key={i+1} value={i+1}>
-                      Tier {i+1}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={String(form.lock_years)}
-                  onChange={e => setForm({ ...form, lock_years: Number(e.target.value) })}
-                >
-                  {[1,2,3,4].map(y => (
-                    <option key={y} value={y}>
-                      {y} Years
-                    </option>
-                  ))}
-                </select>
+                {context === "staking" && (
+                  <>
+                    <input
+                      placeholder="Token ID"
+                      value={form.token_id}
+                      disabled={modal === "edit"}
+                      onChange={e => setForm({ ...form, token_id: e.target.value })}
+                    />
+                    <input
+                      placeholder="Label"
+                      value={form.label}
+                      onChange={e => setForm({ ...form, label: e.target.value })}
+                    />
+                  </>
+                )}
 
                 <div className="modal-actions">
                   <button className="button-secondary" onClick={() => setModal(null)}>
                     Cancel
                   </button>
 
-                  <button
-                    className="button-primary"
-                    onClick={modal === "add" ? handleAdd : handleEdit}
-                  >
+                  <button className="button-primary" onClick={modal === "add" ? handleAdd : handleEdit}>
                     Save
                   </button>
                 </div>
@@ -311,10 +387,10 @@ export default function NFTsPage() {
 
             {modal === "delete" && (
               <>
-                <h3>Delete NFT</h3>
+                <h3>Delete</h3>
 
                 <p className="text-secondary">
-                  Are you sure you want to delete this NFT?
+                  Are you sure you want to delete this entry?
                 </p>
 
                 <div className="modal-actions">
@@ -335,4 +411,11 @@ export default function NFTsPage() {
 
     </div>
   )
+}
+
+/* ================= HELPERS ================= */
+
+function formatAddress(addr) {
+  if (!addr) return "-"
+  return addr.slice(0, 4) + "...." + addr.slice(-4)
 }
