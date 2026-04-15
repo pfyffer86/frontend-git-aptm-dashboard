@@ -11,8 +11,7 @@ import {
   IconShovel,
   IconWallet,
   IconHexagonLetterN,
-  IconSettings,
-  IconWallet
+  IconSettings
 } from "@tabler/icons-react"
 
 export default function Sidebar() {
