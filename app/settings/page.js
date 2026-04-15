@@ -12,6 +12,10 @@ import {
   IconTrash
 } from "@tabler/icons-react"
 
+// 👉 IMPORT DEINE BESTEHENDEN MODALS
+import WalletModal from "../../components/modals/WalletModal"
+import StakingNFTModal from "../../components/modals/StakingNFTModal"
+
 export default function SettingsPage() {
 
   const [wallets, setWallets] = useState([])
@@ -20,6 +24,13 @@ export default function SettingsPage() {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // 🔥 MODAL STATE
+  const [walletModalOpen, setWalletModalOpen] = useState(false)
+  const [editingWallet, setEditingWallet] = useState(null)
+
+  const [stakingModalOpen, setStakingModalOpen] = useState(false)
+  const [editingStaking, setEditingStaking] = useState(null)
 
   async function load() {
     try {
@@ -57,6 +68,70 @@ export default function SettingsPage() {
 
   useEffect(() => { load() }, [])
 
+  /* ================= WALLET HANDLER ================= */
+
+  function handleAddWallet() {
+    setEditingWallet(null)
+    setWalletModalOpen(true)
+  }
+
+  function handleEditWallet(wallet) {
+    setEditingWallet(wallet)
+    setWalletModalOpen(true)
+  }
+
+  async function handleDeleteWallet(id) {
+    if (!confirm("Delete wallet?")) return
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+
+      await fetch(`https://apertum-dashboard-production.up.railway.app/api/wallets/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+
+      load()
+    } catch (err) {
+      console.error("DELETE WALLET ERROR:", err)
+    }
+  }
+
+  /* ================= STAKING HANDLER ================= */
+
+  function handleAddStaking() {
+    setEditingStaking(null)
+    setStakingModalOpen(true)
+  }
+
+  function handleEditStaking(nft) {
+    setEditingStaking(nft)
+    setStakingModalOpen(true)
+  }
+
+  async function handleDeleteStaking(id) {
+    if (!confirm("Delete staking NFT?")) return
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+
+      await fetch(`https://apertum-dashboard-production.up.railway.app/api/nft-staking/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+
+      load()
+    } catch (err) {
+      console.error("DELETE STAKING ERROR:", err)
+    }
+  }
+
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
 
@@ -72,7 +147,7 @@ export default function SettingsPage() {
 
           <div className="card-header">
             <h3>Wallets</h3>
-            <button className="btn-icon">
+            <button className="btn-icon" onClick={handleAddWallet}>
               <IconPlus size={18} />
             </button>
           </div>
@@ -103,8 +178,8 @@ export default function SettingsPage() {
                   <td>{formatAddress(w.address)}</td>
 
                   <td className="actions">
-                    <IconPencil size={16} />
-                    <IconTrash size={16} />
+                    <IconPencil size={16} onClick={() => handleEditWallet(w)} />
+                    <IconTrash size={16} onClick={() => handleDeleteWallet(w.id)} />
                   </td>
 
                 </tr>
@@ -118,7 +193,7 @@ export default function SettingsPage() {
 
           <div className="card-header">
             <h3>Staking Memberships</h3>
-            <button className="btn-icon">
+            <button className="btn-icon" onClick={handleAddStaking}>
               <IconPlus size={18} />
             </button>
           </div>
@@ -153,8 +228,8 @@ export default function SettingsPage() {
                   <td>{n.lock_years} Years</td>
 
                   <td className="actions">
-                    <IconPencil size={16} />
-                    <IconTrash size={16} />
+                    <IconPencil size={16} onClick={() => handleEditStaking(n)} />
+                    <IconTrash size={16} onClick={() => handleDeleteStaking(n.id)} />
                   </td>
 
                 </tr>
@@ -196,6 +271,26 @@ export default function SettingsPage() {
         </div>
 
       </div>
+
+      {/* ================= MODALS ================= */}
+
+      {walletModalOpen && (
+        <WalletModal
+          isOpen={walletModalOpen}
+          onClose={() => setWalletModalOpen(false)}
+          wallet={editingWallet}
+          onSuccess={load}
+        />
+      )}
+
+      {stakingModalOpen && (
+        <StakingNFTModal
+          isOpen={stakingModalOpen}
+          onClose={() => setStakingModalOpen(false)}
+          nft={editingStaking}
+          onSuccess={load}
+        />
+      )}
 
     </div>
   )
