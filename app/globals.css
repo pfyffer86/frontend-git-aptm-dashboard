@@ -1234,3 +1234,46 @@ ASSET ICON (INTERNAL ENTITIES)
 
   color: #3b82f6;
 }
+
+/* =============================
+SETTINGS PAGE
+============================= */
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.2);
+}
+
+.btn-icon:hover {
+  background: rgba(59,130,246,0.2);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  opacity: 0.7;
+}
+
+.actions svg {
+  cursor: pointer;
+}
+
+.actions svg:hover {
+  opacity: 1;
+}
