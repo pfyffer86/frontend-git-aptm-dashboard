@@ -5,23 +5,18 @@ import { supabase } from "../../lib/supabase"
 
 import {
   IconWallet,
-  IconCoins,
-  IconPigMoney
+  IconHexagonLetterS,
+  IconRobot
 } from "@tabler/icons-react"
 
-/* ICON */
+export default function SettingsPage() {
 
-function getTokenIcon(cmc_id) {
-  if (!cmc_id) return null
-  return `https://s2.coinmarketcap.com/static/img/coins/64x64/${cmc_id}.png`
-}
+  const [wallets, setWallets] = useState([])
+  const [staking, setStaking] = useState([])
+  const [tradebots, setTradebots] = useState([])
 
-export default function AssetsPage() {
-
-  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [openWallet, setOpenWallet] = useState(null)
 
   async function load() {
     try {
@@ -30,20 +25,27 @@ export default function AssetsPage() {
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token
 
-      const res = await fetch(
-        "https://apertum-dashboard-production.up.railway.app/api/dashboard",
-        {
-          headers: { Authorization: "Bearer " + token }
-        }
-      )
+      const headers = {
+        Authorization: "Bearer " + token
+      }
 
-      if (!res.ok) throw new Error("API error: " + res.status)
+      const [wRes, sRes] = await Promise.all([
+        fetch("https://apertum-dashboard-production.up.railway.app/api/wallets", { headers }),
+        fetch("https://apertum-dashboard-production.up.railway.app/api/nft-staking", { headers })
+      ])
 
-      const json = await res.json()
-      setData(json)
+      if (!wRes.ok) throw new Error("Wallet API error")
+      if (!sRes.ok) throw new Error("Staking API error")
+
+      const walletsData = await wRes.json()
+      const stakingData = await sRes.json()
+
+      setWallets(walletsData)
+      setStaking(stakingData)
+      setTradebots([])
 
     } catch (err) {
-      console.error("ASSETS ERROR:", err)
+      console.error("SETTINGS ERROR:", err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -54,240 +56,120 @@ export default function AssetsPage() {
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
-  if (!data) return null
-
-  const totalValue = data.totalValue || 0
-  const tokens = data.tokens || []
-  const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
 
   return (
     <div>
 
-      <h1>My Assets</h1>
+      <h1>Settings</h1>
 
-      {/* KPI */}
-      <div className="kpi-grid">
-        <div className="card kpi-card">
+      <div className="section-stack">
 
-  <div className="kpi-header">
-    <div className="kpi-label">Total Assets Value</div>
-    <IconPigMoney size={18} className="kpi-icon" />
-  </div>
+        {/* ================= WALLET TABLE ================= */}
+        <div className="card">
+          <h3 className="mb-16">Wallets</h3>
 
-  <div className="kpi-value">{formatUSD(totalValue)}</div>
-  <div className="kpi-sub">Across all wallets</div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Wallet</th>
+                <th>Label</th>
+                <th>Address</th>
+              </tr>
+            </thead>
 
-</div>
+            <tbody>
+              {wallets.map(w => (
+                <tr key={w.id}>
 
-        <div className="card kpi-card">
-
-  <div className="kpi-header">
-    <div className="kpi-label">Tracked Assets</div>
-    <IconCoins size={18} className="kpi-icon" />
-  </div>
-
-  <div className="kpi-value">{tokens.length}</div>
-  <div className="kpi-sub">Tokens in portfolio</div>
-
-</div>
-      </div>
-
-      {/* TABLE */}
-      <div className="card">
-        <h3 className="mb-16">Assets Breakdown</h3>
-
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Asset</th>
-              <th>Balance</th>
-              <th>Price</th>
-              <th>Value</th>
-              <th>Allocation</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sorted.map(t => {
-              const allocation = totalValue > 0
-                ? (t.value_usd / totalValue) * 100
-                : 0
-
-              const icon = getTokenIcon(t.cmc_id)
-
-              return (
-                <tr key={t.symbol}>
                   <td>
                     <div className="token">
                       <div className="token-icon">
-                        {icon
-                          ? <img src={icon} />
-                          : <div className="token-fallback">{t.symbol[0]}</div>}
+                        <IconWallet size={16} />
                       </div>
-                      <span>{t.symbol}</span>
                     </div>
                   </td>
 
-                  <td>{formatAmount(t.amount)}</td>
-                  <td>{formatPrice(t.price)}</td>
-                  <td>{formatUSD(t.value_usd)}</td>
+                  <td>{w.label || "-"}</td>
+                  <td>{formatAddress(w.address)}</td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ================= STAKING TABLE ================= */}
+        <div className="card">
+          <h3 className="mb-16">Staking Memberships</h3>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th>NFT</th>
+                <th>Label</th>
+                <th>Token ID</th>
+                <th>Tier</th>
+                <th>Lock</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {staking.map(n => (
+                <tr key={n.id}>
 
                   <td>
-                    <div className="allocation">
-                      <div className="allocation-bar">
-                        <div
-                          className="allocation-fill"
-                          style={{ width: `${allocation}%` }}
-                        />
-                      </div>
-                      <div className="allocation-text">
-                        {allocation.toFixed(1)}%
+                    <div className="token">
+                      <div className="token-icon">
+                        <IconHexagonLetterS size={16} />
                       </div>
                     </div>
                   </td>
+
+                  <td>{n.label}</td>
+                  <td>#{n.token_id}</td>
+                  <td>Tier {n.tier}</td>
+                  <td>{n.lock_years} Years</td>
+
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
-  {/* WALLET BREAKDOWN */}
-<div className="card mt-24">
-
-  <h3 className="mb-16">Wallet Breakdown</h3>
-
-  {[...data.wallets]
-    .sort((a, b) => b.totalValue - a.totalValue) // ✅ Wallet Sort
-    .map((w, i) => {
-
-      const isOpen = openWallet === i
-
-      // ✅ Token Sort innerhalb Wallet
-      const sortedTokens = [...(w.tokens || [])]
-        .sort((a, b) => b.value_usd - a.value_usd)
-
-      return (
-        <div key={w.id} className="wallet-card">
-
-          {/* HEADER */}
-          <div
-            className="wallet-header clickable"
-            onClick={() => setOpenWallet(isOpen ? null : i)}
-          >
-
-            <div className="wallet-left">
-
-  <div className="wallet-icon">
-    <IconWallet size={18} />
-  </div>
-
-  <div>
-    <div className="wallet-label">
-      {w.label || "Wallet"}
-    </div>
-
-    <div className="wallet-address">
-      {formatAddress(w.address)}
-    </div>
-  </div>
-
-</div>
-
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div className="wallet-value">
-                {formatUSD(w.totalValue)}
-              </div>
-
-              <div className={`wallet-chevron ${isOpen ? "open" : ""}`}>
-                ▾
-              </div>
-            </div>
-
-          </div>
-
-          {/* ACCORDION */}
-          <div className={`wallet-body ${isOpen ? "open" : ""}`}>
-
-            {/* HEADER */}
-            <div className="wallet-token-header">
-              <div>Asset</div>
-              <div>Balance</div>
-              <div>Price</div>
-              <div>Value</div>
-            </div>
-
-            {/* ROWS */}
-            {sortedTokens.map(t => {
-
-              const icon = getTokenIcon(t.cmc_id)
-
-              return (
-                <div key={t.symbol} className="wallet-token-row">
-
-                  <div className="token">
-                    <div className="token-icon">
-                      {icon
-                        ? <img src={icon} />
-                        : <div className="token-fallback">{t.symbol[0]}</div>}
-                    </div>
-
-                    {/* vorbereitet für späteren Namen */}
-                    <div className="token-meta">
-                      <div>{t.symbol}</div>
-                    </div>
-
-                  </div>
-
-                  <div>{formatAmount(t.amount)}</div>
-                  <div>{formatPrice(t.price)}</div>
-                  <div>{formatUSD(t.value_usd)}</div>
-
-                </div>
-              )
-            })}
-
-          </div>
-
+              ))}
+            </tbody>
+          </table>
         </div>
-      )
-    })}
 
-</div>
+        {/* ================= TRADEBOT TABLE ================= */}
+        <div className="card">
+          <h3 className="mb-16">Tradebots</h3>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th>NFT</th>
+                <th>Label</th>
+                <th>Token ID</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {tradebots.length === 0 && (
+                <tr>
+                  <td colSpan="3" style={{ opacity: 0.6 }}>
+                    No tradebots yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
 
     </div>
   )
 }
 
-/* FORMAT */
-
-function formatUSD(v) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2
-  }).format(v || 0)
-}
-
-function formatPrice(v) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4
-  }).format(v || 0)
-}
-
-function formatAmount(v) {
-  if (!v) return "0"
-  if (v < 0.0001) return v.toFixed(8)
-  if (v < 1) return v.toFixed(6)
-
-  return new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 4
-  }).format(v)
-}
+/* ================= HELPERS ================= */
 
 function formatAddress(addr) {
+  if (!addr) return "-"
   return addr.slice(0, 4) + "...." + addr.slice(-4)
 }
