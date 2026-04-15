@@ -1241,10 +1241,15 @@ CARD GRID HEIGHT FIX (GLOBAL)
   align-items: stretch; /* 🔥 sorgt für gleiche Höhe */
 }
 
+/* =====================================================
+CARD ALIGNMENT FIX (KPI + WALLET GRID)
+===================================================== */
+
 .wallet-grid .card,
 .kpi-grid .card {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* optional: zentriert Inhalt sauber */
+
+  justify-content: flex-start; /* 🔥 statt center */
 }
