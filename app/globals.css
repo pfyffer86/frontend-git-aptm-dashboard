@@ -1205,3 +1205,29 @@ LOGIN PAGE
   font-size: 14px;
   font-weight: 600;
 }
+
+
+/* =====================================================
+SECTION SPACING SYSTEM (NFT / ASSETS / STAKING ALIGNMENT)
+MINIMAL INVASIVE PATCH
+===================================================== */
+
+/* Standard Section Abstand (optional für später) */
+.page-section {
+  margin-bottom: 32px;
+}
+
+/* 🔥 WICHTIG: Abstand Add-Cards → Table */
+.wallet-grid {
+  margin-bottom: 40px; /* vorher 0 → Problemursache */
+}
+
+/* 🔥 Gleiches Verhalten wie KPI → Table */
+.kpi-grid {
+  margin-bottom: 28px; /* bleibt, nur zur Klarheit */
+}
+
+/* 🔥 Falls Cards direkt aufeinander folgen */
+.card + .card {
+  margin-top: 24px;
+}
