@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
                   <td>
                     <div className="token">
-                      <div className="token-icon">
+                      <div className="asset-icon">
                         <IconWallet size={16} />
                       </div>
                     </div>
@@ -119,7 +119,7 @@ export default function SettingsPage() {
 
                   <td>
                     <div className="token">
-                      <div className="token-icon">
+                      <div className="asset-icon">
                         <IconHexagonLetterS size={16} />
                       </div>
                     </div>
