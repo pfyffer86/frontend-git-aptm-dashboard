@@ -25,16 +25,16 @@ export default function Sidebar() {
 
       {/* LOGO */}
      <div className="logo">
-      <svg width="360" height="120" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
+     <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
 
   <defs>
-    <linearGradient id="gGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+    <linearGradient id="gPulsePrimaryV6" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#3b82f6"/>
       <stop offset="100%" stop-color="#d4af37"/>
     </linearGradient>
 
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+    <filter id="glowPulseV6">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -42,25 +42,30 @@ export default function Sidebar() {
     </filter>
   </defs>
 
-  <text x="20" y="55"
-        font-family="Arial"
-        font-size="40"
-        font-weight="900"
-        letter-spacing="6"
-        fill="url(#gGlow)">
+  <!-- Pulse -->
+  <polyline points="6,40 22,40 30,18 38,58 46,32 60,40 74,40"
+            fill="none"
+            stroke="url(#gPulsePrimaryV6)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            filter="url(#glowPulseV6)"/>
+
+  <!-- APTM -->
+  <text x="6" y="52"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="8"
+        font-weight="600"
+        letter-spacing="1"
+        fill="url(#gPulsePrimaryV6)">
     APTM
   </text>
 
-  <polyline points="20,75 60,75 85,45 105,95 125,65 160,75 220,75"
-            fill="none"
-            stroke="url(#gGlow)"
-            stroke-width="2.5"
-            filter="url(#softGlow)"/>
-
-  <text x="120" y="92"
-        font-family="Arial"
-        font-size="11"
-        letter-spacing="5"
+  <!-- DASHBOARD (ultra micro) -->
+  <text x="6" y="57"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="3.2"
+        letter-spacing="0.6"
         fill="#d4af37">
     DASHBOARD
   </text>
