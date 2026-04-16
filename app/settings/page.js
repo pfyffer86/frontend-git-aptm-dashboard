@@ -310,7 +310,7 @@ export default function SettingsPage() {
 
         {/* STAKING TABLE */}
         <div className="card">
-          <h3 className="mb-16">Staking Memberships</h3>
+          <h3 className="mb-16">Memberships</h3>
           <table className="table">
             <thead>
               <tr>
