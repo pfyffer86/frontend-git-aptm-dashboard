@@ -24,41 +24,47 @@ export default function Sidebar() {
     <div className="sidebar">
 
       {/* LOGO */}
-     <div className="logo">
-    <svg width="460" height="140" viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+      <div className="logo">
+        <svg width="460" height="140" viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
 
-  <rect width="460" height="140" rx="18" fill="#05070F"/>
+          <rect width="460" height="140" rx="18" fill="#05070F"/>
 
-  <defs>
-    <linearGradient id="gradMain" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00F5FF"/>
-      <stop offset="100%" stop-color="#7A5CFF"/>
-    </linearGradient>
-  </defs>
+          <defs>
+            <linearGradient id="gradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00F5FF"/>
+              <stop offset="100%" stopColor="#7A5CFF"/>
+            </linearGradient>
+          </defs>
 
-  <!-- Accent Bar -->
-  <rect x="0" y="0" width="460" height="6" fill="url(#gradMain)"/>
+          {/* Accent Bar */}
+          <rect x="0" y="0" width="460" height="6" fill="url(#gradMain)"/>
 
-  <!-- Main Text -->
-  <text x="40" y="80"
-        font-family="Arial, Helvetica, sans-serif"
-        font-size="64"
-        font-weight="900"
-        letter-spacing="8"
-        fill="url(#gradMain)">
-    APTM
-  </text>
+          {/* Main Text */}
+          <text
+            x="40"
+            y="80"
+            fontFamily="Arial, Helvetica, sans-serif"
+            fontSize="64"
+            fontWeight="900"
+            letterSpacing="8"
+            fill="url(#gradMain)"
+          >
+            APTM
+          </text>
 
-  <!-- Sub Label -->
-  <text x="44" y="115"
-        font-family="Arial, Helvetica, sans-serif"
-        font-size="18"
-        letter-spacing="6"
-        fill="#94A3B8">
-    DASHBOARD
-  </text>
+          {/* Sub Label */}
+          <text
+            x="44"
+            y="115"
+            fontFamily="Arial, Helvetica, sans-serif"
+            fontSize="18"
+            letterSpacing="6"
+            fill="#94A3B8"
+          >
+            DASHBOARD
+          </text>
 
-</svg>
+        </svg>
       </div>
 
       {/* OVERVIEW */}
