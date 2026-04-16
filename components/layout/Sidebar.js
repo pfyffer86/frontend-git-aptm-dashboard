@@ -52,6 +52,7 @@ export default function Sidebar() {
       </defs>
       </svg>
       </div>
+  <div className="kpi-sub">Dashboard by fjvp68</div>
 
       {/* OVERVIEW */}
       <div className="menu-section">Overview</div>
