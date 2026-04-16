@@ -97,23 +97,8 @@ export default function Sidebar() {
         <span>Trading</span>
       </Link>
 
-      <Link href="/mining" className={isActive("/mining") ? "active" : ""}>
-        <IconShovel size={18} />
-        <span>Mining</span>
-      </Link>
-
       {/* MANAGEMENT */}
       <div className="menu-section">Management</div>
-
-      <Link href="/wallets" className={isActive("/wallets") ? "active" : ""}>
-        <IconWallet size={18} />
-        <span>Wallets</span>
-      </Link>
-
-      <Link href="/nfts" className={isActive("/nfts") ? "active" : ""}>
-        <IconHexagonLetterN size={18} />
-        <span>NFTs</span>
-      </Link>
 
       <Link href="/settings" className={isActive("/settings") ? "active" : ""}>
         <IconSettings size={18} />
