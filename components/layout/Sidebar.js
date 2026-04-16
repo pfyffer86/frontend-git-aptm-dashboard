@@ -25,46 +25,45 @@ export default function Sidebar() {
 
       {/* LOGO */}
       <div className="logo">
-        <svg width="460" height="140" viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+       <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
 
-          <rect width="460" height="140" rx="18" fill="#05070F"/>
+  <defs>
+    <linearGradient id="gSq" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#7a5cff"/>
+    </linearGradient>
+  </defs>
 
-          <defs>
-            <linearGradient id="gradMain" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#00F5FF"/>
-              <stop offset="100%" stopColor="#7A5CFF"/>
-            </linearGradient>
-          </defs>
+  <!-- Background -->
+  <rect width="180" height="180" rx="18" fill="#07090f"/>
 
-          {/* Accent Bar */}
-          <rect x="0" y="0" width="460" height="6" fill="url(#gradMain)"/>
+  <!-- Chain Symbol (centered) -->
+  <g stroke="url(#gSq)" stroke-width="4.5" fill="none">
+    <path d="M55 95 Q40 75 55 55 Q70 35 90 55 Q110 75 90 95 Q70 115 55 95"/>
+    <path d="M90 95 Q75 75 90 55 Q105 35 125 55 Q145 75 125 95 Q105 115 90 95"/>
+    <line x1="70" y1="75" x2="110" y2="75"/>
+  </g>
 
-          {/* Main Text */}
-          <text
-            x="40"
-            y="80"
-            fontFamily="Arial, Helvetica, sans-serif"
-            fontSize="64"
-            fontWeight="900"
-            letterSpacing="8"
-            fill="url(#gradMain)"
-          >
-            APTM
-          </text>
+  <!-- Text block -->
+  <g font-family="Eurostile, Arial Black, sans-serif" text-anchor="middle">
+    
+    <text x="90" y="130"
+          font-size="12"
+          fill="#9aa"
+          letter-spacing="3">
+      MY
+    </text>
 
-          {/* Sub Label */}
-          <text
-            x="44"
-            y="115"
-            fontFamily="Arial, Helvetica, sans-serif"
-            fontSize="18"
-            letterSpacing="6"
-            fill="#94A3B8"
-          >
-            DASHBOARD
-          </text>
+    <text x="90" y="155"
+          font-size="22"
+          fill="url(#gSq)"
+          letter-spacing="3">
+      APERTUM
+    </text>
 
-        </svg>
+  </g>
+
+</svg>
       </div>
 
       {/* OVERVIEW */}
