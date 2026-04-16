@@ -25,46 +25,36 @@ export default function Sidebar() {
 
       {/* LOGO */}
      <div className="logo">
-    <svg width="360" height="120" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
+    <svg width="460" height="140" viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="460" height="140" rx="18" fill="#05070F"/>
 
   <defs>
-    <linearGradient id="gGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#d4af37"/>
+    <linearGradient id="gradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F5FF"/>
+      <stop offset="100%" stop-color="#7A5CFF"/>
     </linearGradient>
-
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
 
-  <!-- APTM -->
-  <text x="20" y="55"
-        font-family="Arial"
-        font-size="40"
+  <!-- Accent Bar -->
+  <rect x="0" y="0" width="460" height="6" fill="url(#gradMain)"/>
+
+  <!-- Main Text -->
+  <text x="40" y="80"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="64"
         font-weight="900"
-        letter-spacing="6"
-        fill="url(#gGlow)">
+        letter-spacing="8"
+        fill="url(#gradMain)">
     APTM
   </text>
 
-  <!-- Pulse -->
-  <polyline points="20,75 60,75 85,45 105,95 125,65 155,75 190,75"
-            fill="none"
-            stroke="url(#gGlow)"
-            stroke-width="2.5"
-            filter="url(#softGlow)"/>
-
-  <!-- DASHBOARD (tighter) -->
-  <text x="20" y="88"
-        font-family="Arial"
-        font-size="8.5"
-        letter-spacing="2"
-        fill="#d4af37">
+  <!-- Sub Label -->
+  <text x="44" y="115"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="18"
+        letter-spacing="6"
+        fill="#94A3B8">
     DASHBOARD
   </text>
 
