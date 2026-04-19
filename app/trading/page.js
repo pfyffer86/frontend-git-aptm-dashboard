@@ -4,6 +4,13 @@ import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { IconPigMoney, IconRobot } from "@tabler/icons-react"
 
+/* ================= ICON ================= */
+
+function getTokenIcon(cmc_id) {
+  if (!cmc_id) return null
+  return `https://s2.coinmarketcap.com/static/img/coins/64x64/${cmc_id}.png`
+}
+
 export default function TradingPage() {
 
   const [data, setData] = useState([])
@@ -120,6 +127,7 @@ export default function TradingPage() {
             {data.map(n => {
 
               const isLoaded = (n.value || 0) > 0
+              const icon = getTokenIcon(n.token?.cmc_id)
 
               return (
                 <tr key={n.token_id}>
@@ -134,31 +142,28 @@ export default function TradingPage() {
 
                   <td>{n.label}</td>
 
-                  {/* 🔥 TOKEN ICON FIX (CSS-kompatibel) */}
+                  {/* 🔥 TOKEN ICON (CMC + fallback, CSS-kompatibel) */}
                   <td style={{ width: "60px" }}>
-                    <div className="token-icon">
+                    <div className="token">
+                      <div className="token-icon">
 
-                      {n.token?.symbol ? (
-                        <>
+                        {icon && (
                           <img
-                            src={`/tokens/${n.token.symbol}.png`}
-                            alt={n.token.symbol}
+                            src={icon}
+                            alt={n.token?.symbol}
                             onError={(e) => {
                               e.target.style.display = "none"
                               const fallback = e.target.nextSibling
                               if (fallback) fallback.style.display = "flex"
                             }}
                           />
-                          <div className="token-fallback">
-                            {n.token.symbol.slice(0, 3)}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="token-fallback" style={{ display: "flex" }}>
-                          ?
-                        </div>
-                      )}
+                        )}
 
+                        <div className="token-fallback">
+                          {n.token?.symbol?.[0] || "?"}
+                        </div>
+
+                      </div>
                     </div>
                   </td>
 
