@@ -42,7 +42,6 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("API error: " + res.status)
 
       const json = await res.json()
-
       console.log("DASHBOARD DATA:", json)
 
       setData(json)
@@ -72,7 +71,6 @@ export default function DashboardPage() {
   const stakingValue = data.stakingValue || 0
   const tradingValue = data.tradingValue || 0
 
-  const totalBots = data.trading?.length || 0
   const walletCount = wallets.length
   const tokenCount = tokens.length
 
@@ -99,79 +97,48 @@ export default function DashboardPage() {
 
       <div className="kpi-grid">
 
-        {/* TOTAL */}
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Total Portfolio Value</div>
             <IconReportMoney size={18} className="kpi-icon" />
           </div>
-
-          <div className="kpi-value">
-            {formatUSD(totalValue)}
-          </div>
-
-          <div className="kpi-sub">
-            Across all assets
-          </div>
+          <div className="kpi-value">{formatUSD(totalValue)}</div>
+          <div className="kpi-sub">Across all assets</div>
         </div>
 
-        {/* WALLET */}
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Wallet Value</div>
             <IconWallet size={18} className="kpi-icon" />
           </div>
-
-          <div className="kpi-value">
-            {formatUSD(walletValue)}
-          </div>
-
-          <div className="kpi-sub">
-            Liquid assets
-          </div>
+          <div className="kpi-value">{formatUSD(walletValue)}</div>
+          <div className="kpi-sub">Liquid assets</div>
         </div>
 
-        {/* STAKING */}
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Staking Value</div>
             <IconCoins size={18} className="kpi-icon" />
           </div>
-
-          <div className="kpi-value">
-            {formatUSD(stakingValue)}
-          </div>
-
-          <div className="kpi-sub">
-            Locked capital
-          </div>
+          <div className="kpi-value">{formatUSD(stakingValue)}</div>
+          <div className="kpi-sub">Locked capital</div>
         </div>
 
-        {/* TRADING */}
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Trading Value</div>
             <IconRobot size={18} className="kpi-icon" />
           </div>
-
-          <div className="kpi-value">
-            {formatUSD(tradingValue)}
-          </div>
-
-          <div className="kpi-sub">
-            Active in bots
-          </div>
+          <div className="kpi-value">{formatUSD(tradingValue)}</div>
+          <div className="kpi-sub">Active in bots</div>
         </div>
 
-        {/* COUNTS */}
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Tracked Wallets</div>
             <IconWallet size={18} className="kpi-icon" />
           </div>
-
           <div className="kpi-value">{walletCount}</div>
-
           <div className="kpi-sub">Across portfolio</div>
         </div>
 
@@ -180,50 +147,32 @@ export default function DashboardPage() {
             <div className="kpi-label">Tracked Tokens</div>
             <IconCoins size={18} className="kpi-icon" />
           </div>
-
           <div className="kpi-value">{tokenCount}</div>
-
           <div className="kpi-sub">Unique assets</div>
         </div>
 
       </div>
 
-      {/* ================= ALLOCATION ================= */}
+      {/* ================= DONUT ================= */}
 
       <div className="card mt-24">
 
         <h3 className="mb-16">Portfolio Allocation</h3>
 
-        <div className="allocation-bar" style={{ height: "10px" }}>
+        <div className="donut-wrapper">
 
-          <div
-            className="allocation-fill"
-            style={{
-              width: `${walletPct}%`,
-              background: "var(--blue)"
-            }}
+          <DonutChart
+            wallet={walletPct}
+            staking={stakingPct}
+            trading={tradingPct}
           />
 
-          <div
-            className="allocation-fill"
-            style={{
-              width: `${stakingPct}%`,
-              background: "var(--green)"
-            }}
-          />
+          <div className="donut-legend">
+            <LegendItem label="Wallet" value={walletPct} color="var(--blue)" />
+            <LegendItem label="Staking" value={stakingPct} color="var(--green)" />
+            <LegendItem label="Trading" value={tradingPct} color="var(--gold)" />
+          </div>
 
-          <div
-            className="allocation-fill"
-            style={{
-              width: `${tradingPct}%`,
-              background: "var(--purple)"
-            }}
-          />
-
-        </div>
-
-        <div className="allocation-text mt-8">
-          Wallet {walletPct.toFixed(1)}% · Staking {stakingPct.toFixed(1)}% · Trading {tradingPct.toFixed(1)}%
         </div>
 
       </div>
@@ -244,7 +193,6 @@ export default function DashboardPage() {
           </thead>
 
           <tbody>
-
             {topTokens.map(t => {
 
               const icon = getTokenIcon(t.cmc_id)
@@ -262,24 +210,78 @@ export default function DashboardPage() {
                           ? <img src={icon} />
                           : <div className="token-fallback">{t.symbol[0]}</div>}
                       </div>
-
                       <span>{t.symbol}</span>
                     </div>
                   </td>
 
                   <td>{formatUSD(t.value_usd)}</td>
-
                   <td>{allocation.toFixed(1)}%</td>
 
                 </tr>
               )
             })}
-
           </tbody>
         </table>
 
       </div>
 
+    </div>
+  )
+}
+
+/* ================= DONUT ================= */
+
+function DonutChart({ wallet, staking, trading }) {
+
+  const size = 120
+  const stroke = 14
+  const radius = (size / 2) - stroke
+  const circumference = 2 * Math.PI * radius
+
+  const segments = [
+    { value: wallet, color: "var(--blue)" },
+    { value: staking, color: "var(--green)" },
+    { value: trading, color: "var(--gold)" }
+  ]
+
+  let offset = 0
+
+  return (
+    <svg width={size} height={size} className="donut-chart">
+
+      {segments.map((s, i) => {
+
+        const length = (s.value / 100) * circumference
+        const dash = `${length} ${circumference}`
+
+        const circle = (
+          <circle
+            key={i}
+            r={radius}
+            cx={size / 2}
+            cy={size / 2}
+            fill="transparent"
+            stroke={s.color}
+            strokeWidth={stroke}
+            strokeDasharray={dash}
+            strokeDashoffset={-offset}
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          />
+        )
+
+        offset += length
+        return circle
+      })}
+
+    </svg>
+  )
+}
+
+function LegendItem({ label, value, color }) {
+  return (
+    <div className="legend-item">
+      <div className="legend-dot" style={{ background: color }} />
+      <div>{label} {value.toFixed(1)}%</div>
     </div>
   )
 }
