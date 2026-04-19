@@ -58,11 +58,6 @@ export default function Sidebar() {
         <span>Dashboard</span>
       </Link>
 
-      <Link href="/rates" className={isActive("/rates") ? "active" : ""}>
-        <IconChartLine size={18} />
-        <span>Rates</span>
-      </Link>
-
       {/* PORTFOLIO */}
       <div className="menu-section">Portfolio</div>
 
