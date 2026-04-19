@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { IconReportMoney, IconStack2 } from "@tabler/icons-react"
+import { IconReportMoney, IconStack2, IconCoins } from "@tabler/icons-react"
 
 export default function StakingPage() {
 
@@ -83,7 +83,7 @@ export default function StakingPage() {
         <div className="card kpi-card">
           <div className="kpi-header">
             <div className="kpi-label">Total Staked Tokens</div>
-            <IconReportMoney size={18} className="kpi-icon" />
+            <IconCoins size={18} className="kpi-icon" />
           </div>
 
           <div className="kpi-value">
