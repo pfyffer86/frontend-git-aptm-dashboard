@@ -6,7 +6,7 @@ import { supabase } from "../../lib/supabase"
 import {
   IconWallet,
   IconCoins,
-  IconPigMoney
+  IconReportMoney
 } from "@tabler/icons-react"
 
 /* ICON */
@@ -57,8 +57,15 @@ export default function AssetsPage() {
   if (!data) return null
 
   const totalValue = data.totalValue || 0
-  const tokens = data.tokens || []
-  const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
+  const wallets = data.wallets || []
+
+  /* 🔥 UNIQUE TOKEN COUNT */
+  const uniqueTokens = new Set()
+  wallets.forEach(w => {
+    (w.tokens || []).forEach(t => {
+      uniqueTokens.add(t.symbol)
+    })
+  })
 
   return (
     <div>
@@ -67,133 +74,148 @@ export default function AssetsPage() {
 
       {/* KPI */}
       <div className="kpi-grid">
+
+        {/* KPI 1 */}
         <div className="card kpi-card">
-
-  <div className="kpi-header">
-    <div className="kpi-label">Total Assets Value</div>
-    <IconPigMoney size={18} className="kpi-icon" />
-  </div>
-
-  <div className="kpi-value">{formatUSD(totalValue)}</div>
-  <div className="kpi-sub">Across all wallets</div>
-
-</div>
-
-        <div className="card kpi-card">
-
-  <div className="kpi-header">
-    <div className="kpi-label">Tracked Assets</div>
-    <IconCoins size={18} className="kpi-icon" />
-  </div>
-
-  <div className="kpi-value">{tokens.length}</div>
-  <div className="kpi-sub">Tokens in portfolio</div>
-
-</div>
-      </div>
-
-  {/* WALLET BREAKDOWN */}
-<div className="card mt-24">
-
-  <h3 className="mb-16">Wallet Breakdown</h3>
-
-  {[...data.wallets]
-    .sort((a, b) => b.totalValue - a.totalValue) // ✅ Wallet Sort
-    .map((w, i) => {
-
-      const isOpen = openWallet === i
-
-      // ✅ Token Sort innerhalb Wallet
-      const sortedTokens = [...(w.tokens || [])]
-        .sort((a, b) => b.value_usd - a.value_usd)
-
-      return (
-        <div key={w.id} className="wallet-card">
-
-          {/* HEADER */}
-          <div
-            className="wallet-header clickable"
-            onClick={() => setOpenWallet(isOpen ? null : i)}
-          >
-
-            <div className="wallet-left">
-
-  <div className="wallet-icon">
-    <IconWallet size={18} />
-  </div>
-
-  <div>
-    <div className="wallet-label">
-      {w.label || "Wallet"}
-    </div>
-
-    <div className="wallet-address">
-      {formatAddress(w.address)}
-    </div>
-  </div>
-
-</div>
-
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div className="wallet-value">
-                {formatUSD(w.totalValue)}
-              </div>
-
-              <div className={`wallet-chevron ${isOpen ? "open" : ""}`}>
-                ▾
-              </div>
-            </div>
-
+          <div className="kpi-header">
+            <div className="kpi-label">Total Token Value</div>
+            <IconReportMoney size={18} className="kpi-icon" />
           </div>
 
-          {/* ACCORDION */}
-          <div className={`wallet-body ${isOpen ? "open" : ""}`}>
+          <div className="kpi-value">{formatUSD(totalValue)}</div>
+          <div className="kpi-sub">Across all Wallets</div>
+        </div>
 
-            {/* HEADER */}
-            <div className="wallet-token-header">
-              <div>Asset</div>
-              <div>Balance</div>
-              <div>Price</div>
-              <div>Value</div>
-            </div>
+        {/* KPI 2 */}
+        <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Tracked Wallets</div>
+            <IconWallet size={18} className="kpi-icon" />
+          </div>
 
-            {/* ROWS */}
-            {sortedTokens.map(t => {
+          <div className="kpi-value">{wallets.length}</div>
+          <div className="kpi-sub">Across Portfolio</div>
+        </div>
 
-              const icon = getTokenIcon(t.cmc_id)
+        {/* KPI 3 */}
+        <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Tracked Tokens</div>
+            <IconCoins size={18} className="kpi-icon" />
+          </div>
 
-              return (
-                <div key={t.symbol} className="wallet-token-row">
+          <div className="kpi-value">{uniqueTokens.size}</div>
+          <div className="kpi-sub">Across all Wallets</div>
+        </div>
 
-                  <div className="token">
-                    <div className="token-icon">
-                      {icon
-                        ? <img src={icon} />
-                        : <div className="token-fallback">{t.symbol[0]}</div>}
+      </div>
+
+      {/* WALLET BREAKDOWN */}
+      <div className="card mt-24">
+
+        <h3 className="mb-16">Wallet Breakdown</h3>
+
+        {[...wallets]
+          .sort((a, b) => b.totalValue - a.totalValue)
+          .map((w, i) => {
+
+            const isOpen = openWallet === i
+
+            const sortedTokens = [...(w.tokens || [])]
+              .sort((a, b) => b.value_usd - a.value_usd)
+
+            return (
+              <div key={w.id} className="wallet-card">
+
+                {/* HEADER */}
+                <div
+                  className="wallet-header clickable"
+                  onClick={() => setOpenWallet(isOpen ? null : i)}
+                >
+
+                  <div className="wallet-left">
+
+                    <div className="wallet-icon">
+                      <IconWallet size={18} />
                     </div>
 
-                    {/* vorbereitet für späteren Namen */}
-                    <div className="token-meta">
-                      <div>{t.symbol}</div>
+                    <div>
+                      <div className="wallet-label">
+                        {w.label || "Wallet"}
+                      </div>
+
+                      <div className="wallet-address">
+                        {formatAddress(w.address)}
+                      </div>
                     </div>
 
                   </div>
 
-                  <div>{formatAmount(t.amount)}</div>
-                  <div>{formatPrice(t.price)}</div>
-                  <div>{formatUSD(t.value_usd)}</div>
+                  <div className="wallet-value">
+                    {formatUSD(w.totalValue)}
+                  </div>
 
                 </div>
-              )
-            })}
 
-          </div>
+                {/* 🔥 CHEVRON PROMINENT */}
+                <div
+                  className="wallet-toggle"
+                  onClick={() => setOpenWallet(isOpen ? null : i)}
+                  style={{
+                    textAlign: "center",
+                    padding: "10px",
+                    color: "var(--blue)",
+                    cursor: "pointer",
+                    fontSize: "13px"
+                  }}
+                >
+                  {isOpen ? "Hide Tokens ▲" : "Show Tokens ▼"}
+                </div>
 
-        </div>
-      )
-    })}
+                {/* ACCORDION */}
+                <div className={`wallet-body ${isOpen ? "open" : ""}`}>
 
-</div>
+                  <div className="wallet-token-header">
+                    <div>Asset</div>
+                    <div>Balance</div>
+                    <div>Price</div>
+                    <div>Value</div>
+                  </div>
+
+                  {sortedTokens.map(t => {
+
+                    const icon = getTokenIcon(t.cmc_id)
+
+                    return (
+                      <div key={t.symbol} className="wallet-token-row">
+
+                        <div className="token">
+                          <div className="token-icon">
+                            {icon
+                              ? <img src={icon} />
+                              : <div className="token-fallback">{t.symbol[0]}</div>}
+                          </div>
+
+                          <div className="token-meta">
+                            <div>{t.symbol}</div>
+                          </div>
+                        </div>
+
+                        <div>{formatAmount(t.amount)}</div>
+                        <div>{formatPrice(t.price)}</div>
+                        <div>{formatUSD(t.value_usd)}</div>
+
+                      </div>
+                    )
+                  })}
+
+                </div>
+
+              </div>
+            )
+          })}
+
+      </div>
 
     </div>
   )
