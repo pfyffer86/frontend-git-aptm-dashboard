@@ -55,7 +55,8 @@ export default function AssetsPage() {
   if (error) return <div>Error: {error}</div>
   if (!data) return null
 
-  const totalValue = data.totalValue || 0
+  const totalValue = (data.wallets || [])
+  .reduce((sum, w) => sum + (w.totalValue || 0), 0)
   const tokens = data.tokens || []
   const wallets = data.wallets || []
 
