@@ -4,8 +4,6 @@ import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
 import { IconPigMoney, IconRobot } from "@tabler/icons-react"
 
-/* ================= ICON ================= */
-
 function getTokenIcon(cmc_id) {
   if (!cmc_id) return null
   return `https://s2.coinmarketcap.com/static/img/coins/64x64/${cmc_id}.png`
@@ -37,6 +35,8 @@ export default function TradingPage() {
 
       const json = await res.json()
 
+      console.log("TRADING DATA:", json) // 🔥 DEBUG
+
       setData(Array.isArray(json.positions) ? json.positions : [])
 
     } catch (err) {
@@ -54,8 +54,6 @@ export default function TradingPage() {
 
   if (loading) return <div>Loading...</div>
 
-  /* ================= KPI ================= */
-
   const totalValue = data.reduce((sum, n) => sum + (n.value_usd || 0), 0)
   const totalBots = data.length
 
@@ -67,7 +65,6 @@ export default function TradingPage() {
       <div className="kpi-grid">
 
         <div className="card kpi-card">
-
           <div className="kpi-header">
             <div className="kpi-label">Total Value in Bots</div>
             <IconPigMoney size={18} className="kpi-icon" />
@@ -80,11 +77,9 @@ export default function TradingPage() {
           <div className="kpi-sub">
             Across all Tradebots
           </div>
-
         </div>
 
         <div className="card kpi-card">
-
           <div className="kpi-header">
             <div className="kpi-label">Active Bots</div>
             <IconRobot size={18} className="kpi-icon" />
@@ -97,12 +92,10 @@ export default function TradingPage() {
           <div className="kpi-sub">
             Total configured bots
           </div>
-
         </div>
 
       </div>
 
-      {/* ================= TABLE ================= */}
       <div className="card">
 
         <div className="card-header">
@@ -142,34 +135,21 @@ export default function TradingPage() {
 
                   <td>{n.label}</td>
 
-                  {/* 🔥 TOKEN ICON (CMC + fallback, CSS-kompatibel) */}
                   <td style={{ width: "60px" }}>
-                    <div className="token">
-                      <div className="token-icon">
+                    <div className="token-icon">
 
-                        {icon && (
-                          <img
-                            src={icon}
-                            alt={n.token?.symbol}
-                            onError={(e) => {
-                              e.target.style.display = "none"
-                              const fallback = e.target.nextSibling
-                              if (fallback) fallback.style.display = "flex"
-                            }}
-                          />
-                        )}
-
-                        <div className="token-fallback">
+                      {icon ? (
+                        <img src={icon} />
+                      ) : (
+                        <div className="token-fallback" style={{ display: "flex" }}>
                           {n.token?.symbol?.[0] || "?"}
                         </div>
+                      )}
 
-                      </div>
                     </div>
                   </td>
 
-                  <td>
-                    {formatNumber(n.value)}
-                  </td>
+                  <td>{formatNumber(n.value)}</td>
 
                   <td>
                     <div
@@ -195,8 +175,6 @@ export default function TradingPage() {
     </div>
   )
 }
-
-/* ================= HELPERS ================= */
 
 function formatNumber(v) {
   if (!v || isNaN(v)) return "0"
