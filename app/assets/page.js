@@ -6,7 +6,7 @@ import { supabase } from "../../lib/supabase"
 import {
   IconWallet,
   IconCoins,
-  IconPigMoney
+  IconReportMoney
 } from "@tabler/icons-react"
 
 /* ICON */
@@ -21,7 +21,6 @@ export default function AssetsPage() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [openWallet, setOpenWallet] = useState(null)
 
   async function load() {
     try {
@@ -58,48 +57,64 @@ export default function AssetsPage() {
 
   const totalValue = data.totalValue || 0
   const tokens = data.tokens || []
+  const wallets = data.wallets || []
+
   const sorted = [...tokens].sort((a, b) => b.value_usd - a.value_usd)
+
+  /* 🔥 UNIQUE TOKEN COUNT */
+  const uniqueTokens = new Set(tokens.map(t => t.symbol))
 
   return (
     <div>
 
-      <h1>My Assets</h1>
+      <h1>My Tokens</h1>
 
       {/* KPI */}
       <div className="kpi-grid">
+
+        {/* KPI 1 */}
         <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Token Value</div>
+            <IconReportMoney size={18} className="kpi-icon" />
+          </div>
 
-  <div className="kpi-header">
-    <div className="kpi-label">Total Assets Value</div>
-    <IconPigMoney size={18} className="kpi-icon" />
-  </div>
+          <div className="kpi-value">{formatUSD(totalValue)}</div>
+          <div className="kpi-sub">Across all Wallets</div>
+        </div>
 
-  <div className="kpi-value">{formatUSD(totalValue)}</div>
-  <div className="kpi-sub">Across all wallets</div>
-
-</div>
-
+        {/* KPI 2 (TOKENS FIRST) */}
         <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Tracked Tokens</div>
+            <IconCoins size={18} className="kpi-icon" />
+          </div>
 
-  <div className="kpi-header">
-    <div className="kpi-label">Tracked Assets</div>
-    <IconCoins size={18} className="kpi-icon" />
-  </div>
+          <div className="kpi-value">{uniqueTokens.size}</div>
+          <div className="kpi-sub">Across all Wallets</div>
+        </div>
 
-  <div className="kpi-value">{tokens.length}</div>
-  <div className="kpi-sub">Tokens in portfolio</div>
+        {/* KPI 3 */}
+        <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Tracked Wallets</div>
+            <IconWallet size={18} className="kpi-icon" />
+          </div>
 
-</div>
+          <div className="kpi-value">{wallets.length}</div>
+          <div className="kpi-sub">Across Portfolio</div>
+        </div>
+
       </div>
 
       {/* TABLE */}
       <div className="card">
-        <h3 className="mb-16">Assets Breakdown</h3>
+        <h3 className="mb-16">Tokens Breakdown</h3>
 
         <table className="table">
           <thead>
             <tr>
-              <th>Asset</th>
+              <th>Token</th>
               <th>Balance</th>
               <th>Price</th>
               <th>Value</th>
@@ -109,6 +124,7 @@ export default function AssetsPage() {
 
           <tbody>
             {sorted.map(t => {
+
               const allocation = totalValue > 0
                 ? (t.value_usd / totalValue) * 100
                 : 0
@@ -152,109 +168,6 @@ export default function AssetsPage() {
         </table>
       </div>
 
-  {/* WALLET BREAKDOWN */}
-<div className="card mt-24">
-
-  <h3 className="mb-16">Wallet Breakdown</h3>
-
-  {[...data.wallets]
-    .sort((a, b) => b.totalValue - a.totalValue) // ✅ Wallet Sort
-    .map((w, i) => {
-
-      const isOpen = openWallet === i
-
-      // ✅ Token Sort innerhalb Wallet
-      const sortedTokens = [...(w.tokens || [])]
-        .sort((a, b) => b.value_usd - a.value_usd)
-
-      return (
-        <div key={w.id} className="wallet-card">
-
-          {/* HEADER */}
-          <div
-            className="wallet-header clickable"
-            onClick={() => setOpenWallet(isOpen ? null : i)}
-          >
-
-            <div className="wallet-left">
-
-  <div className="wallet-icon">
-    <IconWallet size={18} />
-  </div>
-
-  <div>
-    <div className="wallet-label">
-      {w.label || "Wallet"}
-    </div>
-
-    <div className="wallet-address">
-      {formatAddress(w.address)}
-    </div>
-  </div>
-
-</div>
-
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div className="wallet-value">
-                {formatUSD(w.totalValue)}
-              </div>
-
-              <div className={`wallet-chevron ${isOpen ? "open" : ""}`}>
-                ▾
-              </div>
-            </div>
-
-          </div>
-
-          {/* ACCORDION */}
-          <div className={`wallet-body ${isOpen ? "open" : ""}`}>
-
-            {/* HEADER */}
-            <div className="wallet-token-header">
-              <div>Asset</div>
-              <div>Balance</div>
-              <div>Price</div>
-              <div>Value</div>
-            </div>
-
-            {/* ROWS */}
-            {sortedTokens.map(t => {
-
-              const icon = getTokenIcon(t.cmc_id)
-
-              return (
-                <div key={t.symbol} className="wallet-token-row">
-
-                  <div className="token">
-                    <div className="token-icon">
-                      {icon
-                        ? <img src={icon} />
-                        : <div className="token-fallback">{t.symbol[0]}</div>}
-                    </div>
-
-                    {/* vorbereitet für späteren Namen */}
-                    <div className="token-meta">
-                      <div>{t.symbol}</div>
-                    </div>
-
-                  </div>
-
-                  <div>{formatAmount(t.amount)}</div>
-                  <div>{formatPrice(t.price)}</div>
-                  <div>{formatUSD(t.value_usd)}</div>
-
-                </div>
-              )
-            })}
-
-          </div>
-
-        </div>
-      )
-    })}
-
-</div>
-
     </div>
   )
 }
@@ -286,8 +199,4 @@ function formatAmount(v) {
   return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 4
   }).format(v)
-}
-
-function formatAddress(addr) {
-  return addr.slice(0, 4) + "...." + addr.slice(-4)
 }
