@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { IconPigMoney, IconStack2, IconHexagonLetterS } from "@tabler/icons-react"
+import { IconReportMoney, IconStack2 } from "@tabler/icons-react"
 
 export default function StakingPage() {
 
@@ -54,6 +54,7 @@ export default function StakingPage() {
 
   const totalAPT = data.reduce((sum, n) => sum + (n.stake || 0), 0)
   const totalUSD = totalAPT * price
+  const totalMemberships = data.length
 
   return (
     <div>
@@ -62,11 +63,11 @@ export default function StakingPage() {
 
       <div className="kpi-grid">
 
+        {/* KPI 1 */}
         <div className="card kpi-card">
-
           <div className="kpi-header">
-            <div className="kpi-label">Total Value in Staking</div>
-            <IconPigMoney size={18} className="kpi-icon" />
+            <div className="kpi-label">Total Value</div>
+            <IconReportMoney size={18} className="kpi-icon" />
           </div>
 
           <div className="kpi-value">
@@ -74,16 +75,15 @@ export default function StakingPage() {
           </div>
 
           <div className="kpi-sub">
-            Across all Staking NFTs
+            Across all Membership Tiers
           </div>
-
         </div>
 
+        {/* KPI 2 */}
         <div className="card kpi-card">
-
           <div className="kpi-header">
-            <div className="kpi-label">Total Staked</div>
-            <IconStack2 size={18} className="kpi-icon" />
+            <div className="kpi-label">Total Staked Tokens</div>
+            <IconReportMoney size={18} className="kpi-icon" />
           </div>
 
           <div className="kpi-value">
@@ -91,9 +91,24 @@ export default function StakingPage() {
           </div>
 
           <div className="kpi-sub">
-            Across all Staking NFTs
+            Across all Membership Tiers
+          </div>
+        </div>
+
+        {/* KPI 3 */}
+        <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Total Tracked Memberships</div>
+            <IconStack2 size={18} className="kpi-icon" />
           </div>
 
+          <div className="kpi-value">
+            {totalMemberships}
+          </div>
+
+          <div className="kpi-sub">
+            Across Portfolio
+          </div>
         </div>
 
       </div>
@@ -111,12 +126,13 @@ export default function StakingPage() {
             <tr>
               <th>ASSET</th>
               <th>ID</th>
+              <th>LABEL</th> {/* 🔥 NEU */}
               <th>TIER</th>
-              <th>STAKED APTM</th>        {/* 🔥 angepasst */}
-              <th>MAX STAKE APTM</th>     {/* 🔥 angepasst */}
+              <th>STAKED APTM</th>
+              <th>MAX STAKE APTM</th>
               <th>UTILIZATION</th>
               <th>DURATION</th>
-              <th>ELAPSED</th>            {/* 🔥 angepasst */}
+              <th>ELAPSED</th>
             </tr>
           </thead>
 
@@ -139,12 +155,13 @@ export default function StakingPage() {
 
                   <td>#{n.token_id}</td>
 
+                  {/* 🔥 LABEL */}
+                  <td>{n.label || "-"}</td>
+
                   <td>Tier {n.tier}</td>
 
-                  {/* 🔥 APTM entfernt */}
                   <td>{formatNumber(n.stake)}</td>
 
-                  {/* 🔥 APTM entfernt */}
                   <td>{formatNumber(n.maxStake)}</td>
 
                   <td>
