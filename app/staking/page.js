@@ -122,69 +122,69 @@ export default function StakingPage() {
 
         <table className="table">
 
-          <thead>
-            <tr>
-              <th>ASSET</th>
-              <th>ID</th>
-              <th>LABEL</th> {/* 🔥 NEU */}
-              <th>TIER</th>
-              <th>DURATION</th>
-              <th>STAKED</th>
-              <th>MAX STAKING</th>
-              <th>UTILIZATION</th>
-              <th>ELAPSED</th>
-            </tr>
-          </thead>
+         <thead>
+  <tr>
+    <th>ASSET</th>
+    <th>ID</th>
+    <th>LABEL</th>
+    <th>TIER</th>
+    <th>DURATION</th>        {/* 🔥 verschoben */}
+    <th>IN STAKING</th>
+    <th>MAX STAKING</th>
+    <th>UTILIZATION</th>
+    <th>ELAPSED</th>
+  </tr>
+</thead>
 
-          <tbody>
+<tbody>
 
-            {data.map(n => {
+  {data.map(n => {
 
-              const utilization = n.maxStake > 0
-                ? n.stake / n.maxStake
-                : 0
+    const utilization = n.maxStake > 0
+      ? n.stake / n.maxStake
+      : 0
 
-              return (
-                <tr key={n.token_id}>
+    return (
+      <tr key={n.token_id}>
 
-                  <td>
-                    <div className="asset-icon">
-                      <IconStack2 size={16} />
-                    </div>
-                  </td>
+        <td>
+          <div className="asset-icon">
+            <IconStack2 size={16} />
+          </div>
+        </td>
 
-                  <td>#{n.token_id}</td>
+        <td>#{n.token_id}</td>
 
-                  {/* 🔥 LABEL */}
-                  <td>{n.label || "-"}</td>
+        <td>{n.label || "-"}</td>
 
-                  <td>Tier {n.tier}</td>
+        <td>Tier {n.tier}</td>
 
-                  <td>{formatNumber(n.stake)}</td>
+        {/* 🔥 verschoben */}
+        <td>{n.lock_years}Y</td>
 
-                  <td>{formatNumber(n.maxStake)}</td>
+        <td>{formatNumber(n.stake)}</td>
 
-                  <td>
-                    <ProgressBar
-                      value={utilization}
-                      color={getUtilColor(utilization)}
-                    />
-                  </td>
+        <td>{formatNumber(n.maxStake)}</td>
 
-                  <td>{n.lock_years}Y</td>
+        <td>
+          <ProgressBar
+            value={utilization}
+            color={getUtilColor(utilization)}
+          />
+        </td>
 
-                  <td>
-                    <ProgressBar
-                      value={n.progress}
-                      color="var(--blue)"
-                    />
-                  </td>
+        <td>
+          <ProgressBar
+            value={n.progress}
+            color="var(--blue)"
+          />
+        </td>
 
-                </tr>
-              )
-            })}
+      </tr>
+    )
+  })}
 
-          </tbody>
+</tbody>
 
         </table>
 
