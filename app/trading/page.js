@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "../../lib/supabase"
-import { IconPigMoney, IconRobot } from "@tabler/icons-react"
+import { IconReportMoney, IconRobot } from "@tabler/icons-react"
 
 /* ICON */
 function getTokenIcon(cmc_id) {
@@ -55,11 +55,15 @@ export default function TradingPage() {
 
   if (loading) return <div>Loading...</div>
 
-  const totalValue = data.reduce((sum, n) => sum + (n.value_usd || 0), 0)
-  const totalBots = data.length
+  /* ================= KPI ================= */
+
+  const totalValue = data.reduce((sum, n) => sum + (n.value || 0), 0)
+
+  const loadedBots = data.filter(n => (n.value || 0) > 0).length
+  const unloadedBots = data.filter(n => (n.value || 0) === 0).length
 
   /* 🔥 FIXED APTM ICON */
-  const APTM_CMC_ID = 36838 // aus deiner tokens table
+  const APTM_CMC_ID = 36838
 
   return (
     <div>
@@ -68,10 +72,11 @@ export default function TradingPage() {
 
       <div className="kpi-grid">
 
+        {/* KPI 1 */}
         <div className="card kpi-card">
           <div className="kpi-header">
-            <div className="kpi-label">Total Value in Bots</div>
-            <IconPigMoney size={18} className="kpi-icon" />
+            <div className="kpi-label">Total Vault Value</div>
+            <IconReportMoney size={18} className="kpi-icon" />
           </div>
 
           <div className="kpi-value">
@@ -83,22 +88,41 @@ export default function TradingPage() {
           </div>
         </div>
 
+        {/* KPI 2 */}
         <div className="card kpi-card">
           <div className="kpi-header">
-            <div className="kpi-label">Active Bots</div>
+            <div className="kpi-label">Loaded Bots</div>
             <IconRobot size={18} className="kpi-icon" />
           </div>
 
           <div className="kpi-value">
-            {totalBots}
+            {loadedBots}
           </div>
 
           <div className="kpi-sub">
-            Total configured bots
+            With loaded vault
+          </div>
+        </div>
+
+        {/* KPI 3 */}
+        <div className="card kpi-card">
+          <div className="kpi-header">
+            <div className="kpi-label">Unloaded Bots</div>
+            <IconRobot size={18} className="kpi-icon" />
+          </div>
+
+          <div className="kpi-value">
+            {unloadedBots}
+          </div>
+
+          <div className="kpi-sub">
+            With unloaded vault
           </div>
         </div>
 
       </div>
+
+      {/* ================= TABLE ================= */}
 
       <div className="card">
 
@@ -113,7 +137,7 @@ export default function TradingPage() {
               <th>ASSET</th>
               <th>ID</th>
               <th>LABEL</th>
-              <th>TRADING PAIR</th> {/* 🔥 geändert */}
+              <th>TRADING PAIR</th>
               <th>VAULT</th>
               <th>STATUS</th>
             </tr>
@@ -141,11 +165,10 @@ export default function TradingPage() {
 
                   <td>{n.label}</td>
 
-                  {/* 🔥 TRADING PAIR */}
+                  {/* TRADING PAIR */}
                   <td style={{ width: "120px" }}>
                     <div className="token" style={{ display: "flex", gap: "6px", alignItems: "center" }}>
 
-                      {/* APTM */}
                       <div className="token-icon">
                         {baseIcon ? (
                           <img src={baseIcon} />
@@ -154,10 +177,8 @@ export default function TradingPage() {
                         )}
                       </div>
 
-                      {/* Separator optional */}
                       <span style={{ fontSize: "10px", opacity: 0.5 }}>/</span>
 
-                      {/* Bot Token */}
                       <div className="token-icon">
                         {quoteIcon ? (
                           <img src={quoteIcon} />
@@ -197,6 +218,8 @@ export default function TradingPage() {
     </div>
   )
 }
+
+/* ================= HELPERS ================= */
 
 function formatNumber(v) {
   if (!v || isNaN(v)) return "0"
