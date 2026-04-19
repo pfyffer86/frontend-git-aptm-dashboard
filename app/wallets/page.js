@@ -78,7 +78,7 @@ export default function AssetsPage() {
         {/* KPI 1 */}
         <div className="card kpi-card">
           <div className="kpi-header">
-            <div className="kpi-label">Total Token Value</div>
+            <div className="kpi-label">Total Value</div>
             <IconReportMoney size={18} className="kpi-icon" />
           </div>
 
