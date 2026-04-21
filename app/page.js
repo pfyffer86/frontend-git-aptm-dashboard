@@ -11,6 +11,12 @@ export default function Home() {
   useEffect(() => {
 
     async function check() {
+
+      // 🔥 FIX: hash prüfen (password reset flow)
+      if (typeof window !== "undefined" && window.location.hash) {
+        return // 👉 nichts tun → Supabase verarbeitet Token
+      }
+
       const { data } = await supabase.auth.getSession()
 
       if (data.session) {
